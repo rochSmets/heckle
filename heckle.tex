@@ -1,0 +1,519 @@
+\documentclass[a4paper,11pt]{letter}
+
+\usepackage{graphicx}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+%\usepackage[french]{babel}
+
+\setlength{\textwidth}{16.0cm}
+\setlength{\textheight}{23.0cm}
+\setlength{\oddsidemargin}{0.0cm}
+\setlength{\evensidemargin}{0.0cm}
+\setlength{\topmargin}{-1.0cm}
+
+\renewcommand{\baselinestretch}{1.2}
+
+\begin{document}
+
+\begin{center}
+{\tt --- heckle ---}
+\end{center}
+
+\bigskip
+\bigskip
+\bigskip
+
+{\it This is a short description of the hybrid {\tt heckle} code : normalization, equations that are solved, definition of normalized quantities, details on the ``Buneman'' pusher, predictor-corrector algorithm, closure equations, initializations, grid definition, boundary conditions \& constraints on the code.}
+
+\bigskip
+
+{\bf A. Normalization}
+
+The relevant quantities are normalized as
+\begin{eqnarray*}
+m & = & \widetilde{m} \; m_p \\
+q & = & \widetilde{q} \; e \\
+N & = & \widetilde{N} \; N_o \\
+B & = & \widetilde{B} \; B_0
+\end{eqnarray*}
+
+\noindent
+$m_p$ is the proton mass, $e$ the elementary charge, and $n_0$ and $B_0$
+are particle density and magnetic field of reference. Usually, these values are asymptotic values in the initial plasma configuration, but can also be missing in the box (for example in an unmagnetized run). Hence
+\begin{eqnarray*}
+v & = & \widetilde{v} \; V_A \\
+t & = & \widetilde{t} \; \Omega_{p}^{-1} \\
+l & = & \widetilde{l} \; c \, \omega_{p}^{-1} \\
+E & = & \widetilde{E} \; V_A B_0
+\end{eqnarray*}
+
+where $\Omega_{p}$ and $\omega_{p}$ are the proton cyclotron frequency and proton plasma frequency, respectively. Hereinafter, normalized quantities are written omitting tildas.
+
+\newpage
+
+{\bf B. Equations}
+
+The macroparticle motion is obtained by integration of
+\begin{eqnarray*}
+d_t \mathbf x_{s,h} & = & \mathbf v_{s,h} \\
+m_s d_t \mathbf v_{s,h} & = & q_s (\mathbf E + \mathbf v_{s,h} \times \mathbf B - \eta \mathbf J)
+\end{eqnarray*}
+Where $s$ index is standing for the specie of particle and $h$ index for the index of the particle. Density and fluid velocity result from the summation
+\begin{eqnarray*}
+N (\mathbf x) & = & \Sigma_{s,h} q_s S(\mathbf x - \mathbf x_{s,h}) \\
+\mathbf V (\mathbf x) & = & \Sigma_{s,h} \mathbf v_{s,h} S(\mathbf x - \mathbf x_{s,h}) / \Sigma_{s,h} S(\mathbf x - \mathbf x_{s,h})
+\end{eqnarray*}
+$S(\mathbf x)$ is the first order shape factor. We Neglect the transverse component of the displacement current, and assuming quasineutrality. The curl of the magnetic field hence only provides the transverse component of the total current. This is consistant as the longitudinal component is associated to the total charge density (see the continuity equation). The Maxwell equations  are
+\begin{eqnarray*}
+\partial_t \mathbf B & = & - \boldsymbol{\nabla} \times \mathbf E\\
+\mathbf J & = & \boldsymbol{\nabla} \times \mathbf B\\
+\end{eqnarray*}
+The needed Ohm's law is
+\begin{eqnarray*}
+{\mathbf E} & = & -{\mathbf V} \times {\mathbf B} + N^{-1}({\mathbf J} \times {\mathbf B} - \boldsymbol{\nabla} . {\mathbf P}_e) + \eta {\mathbf J} - \eta^{\prime} \Delta {\mathbf J}
+\end{eqnarray*}
+where $\eta$ is resistivity and $\eta^{\prime}$ is hyperviscosity. Note that in this equation, the current in the Hall term is only the transverse one.
+
+\newpage
+
+{\bf C. Definitions of normalized quantities\footnote{in direction $i$ (standing for $x$, $y$ and $z$), one define the thermal velovity $V_{Ti}^2 = \langle V_i^2 \rangle/2 = k_B T_i / m$. For isotrop and gyrotrop plasma, $V_{T}^2 = V_{Tx}^2 = V_{Ty}^2 = V_{Tz}^2$}}
+
+Magnetic pressure (magnetic energy density) :
+$$
+E_B = \frac{B^2}{2}
+$$
+Generalized momentum :
+$$
+\mathbf p_s = m_s \mathbf v_s + q_s \mathbf A
+$$
+Kinetic pressure :
+$$
+P_s = n_s m_s V_{Ts}^2 = n_s T_s
+$$
+Thermic energy :
+$$
+E_{Ts} = \frac{3}{2} n_s T_s = \left\langle \frac{n_s m_s v_s^2}{2} \right\rangle = \frac{3}{2} n_s m_s V_{Ts}^2
+$$
+Plasma Beta :
+$$
+\beta = \sum_s \beta_s = \sum_s \frac{2 n_s m_s V_{Ts}^2}{B^2} = \sum_s \frac{2 n_s T_s}{B^2}
+$$
+Thermal Larmor radius :
+$$
+\rho_{Ls} = \frac{2 m_s V_{Ts}}{B} = \frac{2}{B} \left(\frac{T_s}{m_s}\right)^{1/2} = \left(\frac{2 \beta_s}{n_s m_s}\right)^{1/2}
+$$
+Thermal velocity :
+$$
+V_{Ts} = \left(\frac{T_s}{m_s}\right)^{1/2} = \left(\frac{\beta_s B^2}{2 n_s m_s}\right)^{1/2}
+$$
+Alfven velocity :
+$$
+V_A = \frac{B}{n^{1/2}} = \left(\frac{2 \sum_s n_s m_s V_{Ts}^2}{\beta \sum_s n_s}\right)^{1/2} = \left(\frac{2 \sum_s n_s T_s}{\beta \sum_s n_s}\right)^{1/2}
+$$
+
+\newpage
+
+{\bf D. ``Buneman'' pusher (Boris 1970)}
+
+The main equation is
+$$
+\frac{\mathbf v_{n+1/2}-\mathbf v_{n-1/2}}{\Delta t} = \frac{q}{m} \left[ \mathbf E_n + \left(\frac{\mathbf v_{n+1/2}+\mathbf v_{n-1/2}}{2} \right) \times \mathbf B_n \right]
+$$
+Defining
+$$
+\mathbf v_{n-1/2} = \mathbf v^- - \frac{q \mathbf E_n}{m} \frac{\Delta t}{2} \,\,\,\,\,\,\,\,\,\,\,\, , \,\,\,\,\,\,\,\,\,\,\,\, \mathbf v_{n+1/2} = \mathbf v^+ + \frac{q \mathbf E_n}{m} \frac{\Delta t}{2}
+$$
+Hence, the equation to solve is
+$$
+\frac{\mathbf v^+-\mathbf v^-}{\Delta t} = \frac{q}{2 m} (\mathbf v^++\mathbf v^-) \times \mathbf B_n
+$$
+$\Theta$ is the rotation angle between $\mathbf v^+$ and $\mathbf v^-$, $\displaystyle \left|\tan \frac{\Theta}{2} \right| = \frac{|\mathbf v^+-\mathbf v^-|}{|\mathbf v^++\mathbf v^-|} = t = \frac{q B_n}{m} \frac{\Delta t}{2}$
+Defining the intermediate $v^{\prime}$ quantity as
+$$
+\mathbf v^{\prime} = \mathbf v^- + \mathbf v^- \times \mathbf t \,\,\,\,\,\,\,\,\,\,\,\, , \,\,\,\,\,\,\,\,\,\,\,\, \mathbf v^+ = \mathbf v^- + \mathbf v^{\prime} \times \mathbf s
+$$
+To get $|\mathbf v^+| = |\mathbf v^-|$, one needs $\displaystyle s = \frac{2}{1+t^2}$.
+
+Lets summerize :
+$$
+F = \frac{q \Delta t}{2 m} \,\,\,\,\,\,\,\,\,\,\,\, , \,\,\,\,\,\,\,\,\,\,\,\, G = \frac{2}{1 + B_n^2 F^2}
+$$
+
+\begin{eqnarray*}
+\mathbf s & = & \mathbf v + F \mathbf E_n\\
+\mathbf u & = & \mathbf s + F (\mathbf s \times \mathbf B_n)\\
+\mathbf v & = & \mathbf s + G (\mathbf u \times \mathbf B_n) + F \mathbf E_n
+\end{eqnarray*}
+
+\newpage
+
+{\bf E. Algorithm}
+
+%$\spadesuit$
+Predictor :
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf v_{n+1/2} = \mathbf v_{n-1/2} + \frac{q \Delta t}{m_p} \left[\mathbf E_n + \frac{\mathbf v_{n+1/2} + \mathbf v_{n-1/2}}{2} \times \mathbf B_n\right]$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf x_{n+1} = \mathbf x_n + \Delta t \mathbf v_{n+1/2}$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf N_{n+1/2} = \Sigma_s q_s (S_n + S_{n+1})/2$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf V_{n+1/2} = \Sigma_s (S_n + S_{n+1}) \mathbf v_{n+1/2} / 2 \mathbf N_{n+1/2}$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf B_{n+1/2} = \mathbf B_n - \frac{\Delta t}{2} \boldsymbol{\nabla} \times \mathbf E_n$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf J_{n+1/2} = \boldsymbol{\nabla} \times \mathbf B_{n+1/2}$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf P_{n+1/2}$ with the appropriate law
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf E_{n+1/2} = - \mathbf V_{n+1/2} \times \mathbf B_{n+1/2} + \frac{1}{N_{n+1/2}} \left( \mathbf J_{n+1/2} \times \mathbf B_{n+1/2} - \boldsymbol{\nabla} P_{n+1/2} \right) + \eta \mathbf J_{n+1/2}$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf E_{n+1} = - \mathbf E_n + 2 \mathbf E_{n+1/2}$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf B_{n+1} = \mathbf B_{n+1/2} - \frac{\Delta t}{2} \boldsymbol{\nabla} \times \mathbf E_{n+1}$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf J_{n+1} = \boldsymbol{\nabla} \times \mathbf B_{n+1}$
+
+\bigskip
+
+%$\spadesuit$
+Corrector :
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf v_{n+3/2} = \mathbf v_{n+1/2} + \frac{q \Delta t}{m_p} \left[\mathbf E_{n+1} + \frac{\mathbf v_{n+3/2} + \mathbf v_{n+1/2}}{2} \times \mathbf B_{n+1}\right]$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf x_{n+2} = \mathbf x_{n+1} + \Delta t \mathbf v_{n+3/2}$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf N_{n+3/2} = \Sigma_s q_s (S_{n+1}+S_{n+2})/2$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf V_{n+3/2} = \Sigma_s (S_{n+1} + S_{n+2}) \mathbf v_{n+3/2} / 2 \mathbf N_{n+3/2} $
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf B_{n+3/2} = \mathbf B_{n+1} - \frac{\Delta t}{2} \boldsymbol{\nabla} \times \mathbf E_{n+1}$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf J_{n+1/2} = \boldsymbol{\nabla} \times \mathbf B_{n+1/2}$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf P_{n+3/2}$ with the appropriate law
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf E_{n+3/2} = - \mathbf V_{n+3/2} \times \mathbf B_{n+3/2} + \frac{1}{N_{n+3/2}} \left( \mathbf J_{n+3/2} \times \mathbf B_{n+3/2} - \boldsymbol{\nabla} P_{n+3/2} \right) + \eta \mathbf J_{n+3/2}$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf E_{n+1} = \frac{1}{2}(\mathbf E_{n+1/2} + \mathbf E_{n+3/2})$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf B_{n+1} = \mathbf B_{n+1/2} - \frac{\Delta t}{2} \boldsymbol{\nabla} \times \mathbf E_{n+1}$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf J_{n+1} = \boldsymbol{\nabla} \times \mathbf B_{n+1}$
+
+\newpage
+
+{\bf F. Closure equations}
+
+\bigskip
+
+\underline{\bf Isothermal}
+
+%$\spadesuit$
+Predictor :
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, P_{n+1/2} = N_{n+1/2} T_0$
+
+%$\spadesuit$
+Corrector :
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, P_{n+3/2} = N_{n+3/2} T_0$
+
+\bigskip
+
+\underline{\bf Polytropic}
+
+Including a heat flux $\mathbf q = - \kappa \boldsymbol{\nabla} T_e$, one defines $S = \ln (P_e n^{-\gamma})$ with $\gamma = 5/3$ (that we could eventually call plasma entropy). The closure equation then writes
+$\displaystyle \partial_t S + \mathbf U . \boldsymbol{\nabla} S = \frac{(\gamma-1) \kappa}{n^{\gamma} S} \boldsymbol{\Delta} (S n^{\gamma-1})$ where $\mathbf U$ is the electron flow, $\mathbf U = \mathbf V - \mathbf J / N$, $\mathbf V$ being the ion velocity. This hyperbolic equation is integrated with an upwind scheme.
+
+%$\spadesuit$
+Predictor :
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf U_{n+1/2} = \mathbf V_{n+1/2} - \frac{\mathbf J_{n+1/2}}{N_{n+1/2}}$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, S_{n+1/2} = \dots $ \footnote{$S_{n-1/2}$ coming from previous time step}
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, P_{n+1/2} = N_{n+1/2}^{\gamma}\exp(S_{n+1/2})$
+
+%$\spadesuit$
+Corrector :
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf U_{n+3/2} = \mathbf V_{n+3/2} - \frac{\mathbf J_{n+3/2}}{N_{n+3/2}}$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, S_{n+3/2} = \dots $
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, P_{n+3/2} = N_{n+3/2}^{\gamma}\exp(S_{n+3/2})$
+
+\newpage
+
+\underline{\bf Full-Pressure with Implicit cyclotron term (Winske)}
+
+$\partial_t \mathbf P = D(\mathbf P) + C(\mathbf P) + I(\mathbf P)$ with the 3 operators :
+
+Driver : $\displaystyle D(\mathbf P) = -\mathbf U . \boldsymbol{\nabla} \mathbf P - \mathbf P \boldsymbol{\nabla} . \mathbf U - \mathbf P . \boldsymbol{\nabla} \mathbf U - (\mathbf P . \boldsymbol{\nabla} \mathbf U)^T$ \\[0.2cm]
+Cyclotron : $\displaystyle C(\mathbf P) = -\frac{e}{m} [\mathbf P \times \mathbf B + (\mathbf P \times \mathbf B)^T]$ \\[0.0cm]
+Izotropization : $\displaystyle I(\mathbf P) = -\frac{\Omega_e}{\tau_i} (\mathbf P - P_0 \mathbf 1)$ with $P_0 = 1/3 \mathrm{Tr} (\mathbf P)$
+
+$\tau_i$ being an izotropization time and $\mathbf U$ the electron velocity.
+
+\medskip
+
+$\bullet$ Up-wind scheme for term $-\mathbf U . \boldsymbol{\nabla} \mathbf P$ in $D$, and space centered on 2 mesh points for other terms.\\
+$\bullet$ Semi-implicit scheme for $C$ with an $\alpha$ coefficient.\\
+$\bullet$ Izotropization term $I$ is of weak importance, and is for simplicity not centered in time.
+
+\bigskip
+
+$$
+[\mathbf 1 - \alpha \Delta t C] (\mathbf P_{n+1/2}) = \mathbf P_{n-1/2} + \Delta t [(1- \alpha)C(\mathbf P_{n-1/2}) + I(\mathbf P_{n-1/2}) + D (\mathbf P_n)] \equiv \mathbf F
+$$
+$\bullet$ The $\mathbf P$ term can be linearly deduced from the $\mathbf F$ term, provided to be in the field-aligned frame.\\
+$\bullet$ In $C$ operator, $\Omega_e = e B/m_e$ where $B$ is the local field and $m_e$ the electron mass.\\
+$\bullet$  With $\tau = \alpha \Omega_e \Delta t$, the implicit equation $[\mathbf 1 - \alpha \Delta t C] (\mathbf P) = \mathbf F$ has the solution (direction 0 is along the magnetic field, 1 \& 2 perpendicular to the magnetic field)
+
+$\displaystyle P_{00} = F_{00}$
+
+$\displaystyle P_{01} = \frac{F_{01} - \tau F_{02}}{1+\tau^2}$
+
+$\displaystyle P_{02} = \frac{F_{02} + \tau F_{01}}{1+\tau^2}$
+
+$\displaystyle P_{11} = \frac{F_{11}(1+2\tau^2) + 2 \tau^2 F_{22} - 2 \tau F_{12}}{1+4\tau^2}$
+
+$\displaystyle P_{12} = \frac{\tau F_{11} + F_{12} - \tau F_{22}}{1+4\tau^2}$
+
+$\displaystyle P_{22} = \frac{F_{11}(2\tau^2) + 2 \tau F_{12} +(1+2\tau^2) F_{22}}{1+4\tau^2}$
+
+\newpage
+
+Predictor :
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf C_{n-1/2} = -\frac{1}{m} \left[\mathbf P_{n-1/2} \times \mathbf B_{n-1/2} + \left(\mathbf P_{n-1/2} \times \mathbf B_{n-1/2}\right)^T\right]$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf I_{n-1/2} = -\frac{B_{n-1/2}}{m \tau_i} \left[\mathbf P_{n-1/2} - \frac{\mathbf 1}{3} \mathrm{Tr} (\mathbf P_{n-1/2})\right]$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf F = \mathbf P_{n-1/2} + \Delta t[(1- \alpha) \mathbf C_{n-1/2} - \mathbf I_{n-1/2} + \mathbf D_n]\footnote{this last term coming from previous time step}$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\,$ Rotate {\bf F} to $\mathbf B_{n+1/2}$ aligned coordinate system
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\,$ Solve $\mathbf P_{n+1/2}$ from $\mathbf F$ (linear system)
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\,$ Rotate $\mathbf P_{n+1/2}$ to cartesian coordinate system
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf U_{n+1/2} = \mathbf V_{n+1/2} - \frac{\mathbf J_{n+1/2}}{N_{n+1/2}}$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf D_{n+1/2}$ calculated with $\mathbf U_{n+1/2}$ and $\mathbf P_{n+1/2}$ (up-wind)
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf D_{n+1} = - \mathbf D_{n} + 2 \mathbf D_{n+1/2}$ (extrapolation)
+
+\bigskip
+
+Corrector :
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf C_{n+1/2} = -\frac{1}{m} \left[\mathbf P_{n+1/2} \times \mathbf B_{n+1/2} + \left(\mathbf P_{n+1/2} \times \mathbf B_{n+1/2}\right)^T\right]$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf I_{n+1/2} = -\frac{B_{n+1/2}}{m \tau_i} \left[ \mathbf P_{n+1/2} - \frac{\mathbf 1}{3} \mathrm{Tr} (\mathbf P_{n+1/2}) \right]$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf F = \mathbf P_{n+1/2} + \Delta t [(1- \alpha) \mathbf C_{n+1/2} - \mathbf I_{n+1/2} + \mathbf D_{n+1}]$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\,$ Rotate {\bf F} to $\mathbf B_{n+3/2}$ aligned coordinate system
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\,$ Solve $\mathbf P_{n+3/2}$ from $\mathbf F$ (linear system)
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\,$ Rotate $\mathbf P_{n+3/2}$ to cartesian coordinate system
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf U_{n+3/2} = \mathbf V_{n+3/2} - \frac{\mathbf J_{n+3/2}}{N_{n+3/2}}$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf D_{n+3/2}$ calculated with $\mathbf U_{n+3/2}$ and $\mathbf P_{n+3/2}$ (up-wind)
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf D_{n+1} = \frac{1}{2} ( \mathbf D_{n+1/2} + \mathbf D_{n+3/2} )$ (interpolation)
+
+\newpage
+
+\underline{\bf Full-Pressure with subcycled cyclotron term}
+
+$\partial_t \mathbf P = D(\mathbf P) + C(\mathbf P) + I(\mathbf P)$ with the 3 operators :
+
+Driver : $\displaystyle D(\mathbf P) = -\mathbf U . \boldsymbol{\nabla} \mathbf P - \mathbf P \boldsymbol{\nabla} . \mathbf U - \mathbf P . \boldsymbol{\nabla} \mathbf U - (\mathbf P . \boldsymbol{\nabla} \mathbf U)^T$ \\[0.2cm]
+Cyclotron : $\displaystyle C(\mathbf P) = -\frac{e}{m} [\mathbf P \times \mathbf B + (\mathbf P \times \mathbf B)^T]$ \\[0.0cm]
+Izotropization : $\displaystyle I(\mathbf P) = -\frac{e B}{m \tau_i} (\mathbf P - P_0 \mathbf 1)$ with $P_0 = 1/3 \mathrm{Tr} (\mathbf P)$
+
+$\tau_i$ being an izotropization time and $\mathbf U$ the electron velocity.
+
+\medskip
+
+$\bullet$ Up-wind scheme for term $-\mathbf U . \boldsymbol{\nabla} \mathbf P$ in $D$, and space centered on 2 mesh points for other terms.\\
+$\bullet$ sub-cycled scheme for $C$ with $N=m_p/m_e$ substeps. At the $m^{\mathrm{th}}$ iteration, Pressure and magnetic field are to be considered at iteration $n-1/2+m/N$\\
+$\bullet$ Izotropization term $I$ is of weak importance, and is for simplicity not centered in time.
+
+\bigskip
+
+At the $m^{\mathrm{th}}$ iteration over $N$,
+$$
+\mathbf P_{n-1/2+m/N+1/N} = \mathbf P_{n-1/2+m/N} + \frac{\Delta t}{N} [C(\mathbf P_{n-1/2+m/N}) + I(\mathbf P_{n-1/2}) + D (\mathbf P_n)]
+$$
+
+\newpage
+
+Predictor :
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf C_{n-1/2+m/N} = -\frac{1}{m} \left[\mathbf P_{n-1/2+m/N} \times \mathbf B_{n-1/2+m/N} + \left(\mathbf P_{n-1/2+m/N} \times \mathbf B_{n-1/2+m/N}\right)^T\right]$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf I_{n-1/2} = -\frac{B_{n-1/2}}{m \tau_i} \left[ \mathbf P_{n-1/2} - \frac{\mathbf 1}{3} \mathrm{Tr} (\mathbf P_{n-1/2}) \right]$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf P_{n-1/2+m/N+1/N} = \mathbf P_{n-1/2+m/N} + \frac{\Delta t}{N} [C(\mathbf P_{n-1/2+m/N}) - I(\mathbf P_{n-1/2}) + D (\mathbf P_n)]$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf U_{n+1/2} = \mathbf V_{n+1/2} - \frac{\mathbf J_{n+1/2}}{N_{n+1/2}}$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf D_{n+1/2}$ calculated with $\mathbf U_{n+1/2}$ and $\mathbf P_{n+1/2}$ (up-wind)
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf D_{n+1} = - \mathbf D_{n} + 2 \mathbf D_{n+1/2}$ (extrapolation)
+
+\bigskip
+
+Corrector :
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf C_{n+1/2+m/N} = -\frac{1}{m} \left[\mathbf P_{n+1/2+m/N} \times \mathbf B_{n+1/2+m/N} + \left(\mathbf P_{n+1/2+m/N} \times \mathbf B_{n+1/2+m/N}\right)^T\right]$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf I_{n+1/2} = -\frac{B_{n+1/2}}{m \tau_i} \left[ \mathbf P_{n+2/2} - \frac{\mathbf 1}{3} \mathrm{Tr} (\mathbf P_{n+1/2}) \right]$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf P_{n+1/2+m/N+1/N} = \mathbf P_{n+1/2+m/N} + \frac{\Delta t}{N} [C(\mathbf P_{n+1/2+m/N}) - I(\mathbf P_{n+1/2}) + D (\mathbf P_n)]$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf U_{n+3/2} = \mathbf V_{n+3/2} - \frac{\mathbf J_{n+3/2}}{N_{n+3/2}}$
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf D_{n+3/2}$ calculated with $\mathbf U_{n+3/2}$ and $\mathbf P_{n+3/2}$ (up-wind)
+
+$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf D_{n+1} = \frac{1}{2} ( \mathbf D_{n+1/2} + \mathbf D_{n+3/2} )$ (interpolation)
+
+%$\spadesuit$ Predictor :
+%
+%$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf P_{n+1/2} = \mathbf P_{n-1/2} + \Delta t D_{n}+C_{sub}$ 
+%
+%$\displaystyle \,\,\,\,\,\, 1. \,\,\,\,\,\,\,\, \mathbf C_{sub} = \left(-1\right)\sum\limits_{i=0}^N \frac{\Delta t}{N}\Omega_{i}\left[\left[P_{i} \otimes b_{i}\right] + \left[P_{i} \otimes b_{i}\right]^T\right] $
+%
+%$\displaystyle \,\,\,\,\,\,\,\,\,\, i. \,\,\,\,\,\,\,\, \mathbf P_{i} = P_{n-1/2} + \frac{\Delta t}{N}\Omega_{i}\left[\left[P_{i} \otimes b_{i}\right] + \left[P_{i} \otimes b_{i}\right]^T\right]\times\left(i\right) $
+%
+%$\displaystyle \,\,\,\,\,\,\,\,\,\, ii. \,\,\,\,\,\,\,\, \mathbf b_{i} = b_{n-1/2} + \frac{b_{n+1/2} - b_{n-1/2}}{N}\times\left(i\right)$  and  $\mathbf \Omega_{i} = \frac{ \mathbf B_{i}}{ \mathbf m_e}$
+%
+%
+%$\displaystyle \,\,\,\,\,\, 2 \,\,\,\,\,\,\,\, \mathbf W_{n+1/2}^{e} = V_{n+1/2} - \frac{J_{n+1/2}}{N_{n+1/2}}$
+%
+%$\displaystyle \,\,\,\,\,\, 3. \,\,\,\,\,\,\,\, \mathbf D_{n+1/2} = \left(-1\right)\left[W_{n+1/2}^{e}.\nabla P_{n+1/2} + P_{n+1/2}\nabla .W_{n+1/2}^{e} + P_{n+1/2}.\nabla W_{n+1/2}^{e} + \left(P_{n+1/2}.\nabla W_{n+1/2}^{e}\right)^T\right]$
+%
+%$\displaystyle \,\,\,\,\,\, 4. \,\,\,\,\,\,\,\, \mathbf D_{n+1} = - \mathbf D_{n} + 2 \mathbf D_{n+1/2}$
+%
+%\bigskip
+%
+%$\spadesuit$ Corrector :
+%
+%$\displaystyle \bullet \,\,\,\,\,\,\,\, \mathbf P_{n+3/2} = \mathbf P_{n+1/2} + \Delta t D_{n+1}+C_{sub}$ 
+%
+%$\displaystyle \,\,\,\,\,\, 1. \,\,\,\,\,\,\,\, \mathbf C_{sub} = \left(-1\right)\sum\limits_{i=0}^N \frac{\Delta t}{N}\Omega_{i}\left[\left[P_{i} \otimes b_{i}\right] + \left[P_{i} \otimes b_{i}\right]^T\right] $
+%
+%$\displaystyle \,\,\,\,\,\,\,\,\,\, i. \,\,\,\,\,\,\,\, \mathbf P_{i} = P_{n+1/2} + \frac{\Delta t}{N}\Omega_{i}\left[\left[P_{i} \otimes b_{i}\right] + \left[P_{i} \otimes b_{i}\right]^T\right]\times\left(i\right) $
+%
+%$\displaystyle \,\,\,\,\,\,\,\,\,\, ii. \,\,\,\,\,\,\,\, \mathbf b_{i} = b_{n+1/2} + \frac{b_{n+3/2} - b_{n+1/2}}{N}\times\left(i\right)$  and  $ \mathbf\Omega_{i} = \frac{ \mathbf B_{i}}{ \mathbf m_e} $
+%
+%
+%$\displaystyle \,\,\,\,\,\, 2. \,\,\,\,\,\,\,\, \mathbf W_{n+3/2}^{e} = V_{n+3/2} - \frac{J_{n+3/2}}{N_{n+3/2}}$
+%
+%$\displaystyle \,\,\,\,\,\, 3. \,\,\,\,\,\,\,\, \mathbf D_{n+3/2} = \left(-1\right)\left[W_{n+3/2}^{e}.\nabla P_{n+3/2} + P_{n+3/2}\nabla .W_{n+3/2}^{e} + P_{n+3/2}.\nabla W_{n+3/2}^{e} + \left(P_{n+3/2}.\nabla W_{n+3/2}^{e}\right)^T\right]$
+%
+%$\displaystyle \,\,\,\,\,\, 4. \,\,\,\,\,\,\,\, \mathbf D_{n+1} = \frac{1}{2}(\mathbf D_{n+1/2} + \mathbf D_{n+3/2})$
+
+\newpage
+
+{\bf G. Closure equation}
+
+$\spadesuit$ Isotherm :
+
+It is the simplest case : $T_e$ is initially defined as $P_e/N$. Then $P_{n+1/2} = N_{n+1/2} T_e$.
+
+$\spadesuit$ Polytropic (with a heat flux) :
+
+The equation on entropy $s = \ln (P N^{-\gamma})$, and noting $\mathbf a = \mathbf v_e$, the equation is of the form $\partial_t s + {\bf a} . \partial_{\bf x} s = S$. This equation is integrated using a Lax-Wendroff scheme (the equation being linear) :
+
+$$
+U_j^{n+1} = \frac{1}{2} \nu (\nu+1) U_{j-1}^n + (1-\nu^2) U_j^n + \frac{1}{2} \nu (\nu-1) U_{j+1}^n
+$$
+
+with $\nu = {\bf a} . \Delta t / \Delta {\bf x}$. The Laplacian appearing in the $S$ term is simply calculated as :
+
+$$
+\Delta S_j = \frac{1}{\Delta x^2} (S_{j+1} - 2 S_j + S_{j-1})
+$$
+
+Note that $s_{n-1/2} = \ln (P_{n-1/2} N_{n-1/2}^{\gamma})$ and $s_{n+1/2} = \ln (P_{n+1/2} N_{n+1/2}^{\gamma})$. Hence, the 2 density have to be kept.
+
+\newpage
+
+{\bf H. Initialization}
+
+The magnetic field is initialized with the needed profile. The electric field results from the Ohm's law, and thus need not to be prescribed. The resistivity is increased near walls if not periodic. Protons (alfas... ) and electrons temperature are analytically determined on the grid points.\\
+
+The density profile is prescribed analytically. The weight of macro-particles is the same for all particles of specie $s$. The number of particles injected in each cell is linear to the local density divided by the integrated density over the whole box. To work properly, we generally use 100 particles per cells.\\
+
+A drift velocity is calculated to hold $\mathbf J = \boldsymbol{\nabla} \times \mathbf B$. We use the classical relation $J_s / T_s =$ const for each species $s$ including electrons.
+
+The particle velocity is determined using the Box \& Muller algorithm. $a$ and $b$ standing for random numbers between 0 and 1 with a normal distribution, the particle velocity in direction $i$ is
+$$
+\sqrt{\frac{-2 \ln(a) T_{si}}{m_s}}\cos(2 \pi b)
+$$
+
+\newpage
+
+{\bf I. Grids definitions}
+
+This code uses a simple grid representation (no Yee lattice). There is 2 grids, shifted from a half grid size. They are called {\tt G1} and {\tt G2}.
+
+In one direction (both $X$ $Y$ and $Z$ directions are equivalents), lets call $L$ the size of the domain, $N$ the number of grid cells and $\Delta$ the grid size. Of course,
+$$
+\Delta = \frac{L}{N}
+$$
+
+The {\tt G1} grid has $N+1$ grid points associated to $N$ cells. Grid point labelled 0 is located at $X=0$ and grid point labelled $N$ is located at $X=L$.
+
+The {\tt G2} grid has $N+2$ grid points associated to $N+1$ cells. Grid point labelled 0 is located at $X=-\Delta/2$, and grid point labelled $N+1$ is located at $X=L+\Delta/2$.
+
+Only the magnetic field is defined on {\tt G1}. All others quantities (electric field, electron pressure and temperature, density, fluid density, current density) are defined on {\tt G2}.
+
+This choice is of course motivated by the centered form of the Maxwell-Faraday equation and the leap-frog scheme to push the particles. This results in an interpollation for the electron pressure tensor when integrating the Ohm's law.
+
+\newpage
+
+{\bf J. Boundary conditions}
+
+Because of the definition of the 2 grids, the magnetic field results from the shape of the electric field ; only the electric field needs a boundary conditions when the code is non-periodic.
+
+Calling $N$ the normal direction to the boundary, and $T$ the tangential direction, We set for the electric field
+$$
+d_N E_N = 0, \mathbf E_T = 0
+$$
+
+For the density, it is simply $d_N n = 0$.
+
+For the current density and fluid velocity, we use fluid conditions to keep the plasma in the domain, and thus anihilate the flux,
+$$
+J_N = 0, d_N \mathbf J_T = 0
+$$
+
+To limit wave reflections at the boundaries of the domain, we set a small resistivity, increased near the walls : multiplied by 5 two grid points before the limit of the domain, multiplied by 25 one grid point before the limit of the domain, and multiplied by 125 on the boundary of the domain.
+
+\newpage
+
+{\bf K. Constraints on the code}
+
+The parameters used in classical run for $\beta = 1$ are $\Delta L = 0.4$ and $\Delta t = 0.005$.
+
+Grid size : it has to resolve correctly the cyclotron turn of particles. If this value is too large, any bulk velocity in perpendicular direction will be converted in velocity of gyromotion (perpendicular heating). Take at least 3 grid size for the thermal larmor radius.
+
+Time step : it has to satisfy the CFL condition for the faster mode : generally the whistler mode (at least in parallel direction). For this mode, $\omega \propto k^2$, meaning that time step has to evolve as the square of the grid size... The CFL associated to particle velocity is far less constraining.
+
+There is no clear lower limit for the grid size, except that at one point it will cost to much in time step.
+
+As there is no Maxwell-Gauss equation associated to neutrality, the plasma pulsation is not resolved.
+
+A smooth is used for the moments associated to particles : density and fluid velocity. If not, the energy conservation is generally better, but the code can turn instable, generally because the density gets too low at some given points. Yet, the only clear acceptable way to manage this is to feed the simulation to prevent density holes.
+
+A small resistivity is also used. It is supposed to have some nice consequences on the stability... We use a value of 0.0001, but its role is note that clear.
+
+\end{document}

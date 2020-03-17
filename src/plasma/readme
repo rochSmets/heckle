@@ -1,0 +1,26 @@
+
+2gem :
+   same initialization of the gem, with 2 sheets and periodicity
+
+gem :
+   same initialization as the gem
+
+munster :
+   forcing on the magnetic and/or the fluid velocity.
+   this can be at t=0, or through time.
+
+uniform :
+   uniform magnetized plasma with protons and alphas that can drift
+
+yaourt :
+   2 beams configuration (laser reconnection) that can be non-coplanar
+   and/or asymetric
+
+shells :
+   2 beams configuration with whatever phi & psi angle
+
+harris :
+   the "original" harris sheet with a background
+
+felafel :
+   uniform 2d plasma with a strong velocity drift against a wall

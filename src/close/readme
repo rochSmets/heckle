@@ -1,0 +1,7 @@
+
+isotherm :
+   isotherm hypothesis. needs an isoropic initial temperature.
+
+polytrop :
+   polytropic law (gamma = 5/3) with a heat flux (q = - kappa grad t)
+

@@ -1,0 +1,33 @@
+#
+SRC = /home/roch/code/heckle/src/
+INC = /home/roch/code/heckle/inc/
+LIB = -lm
+#
+CCX = gcc
+EHX = xombul
+OHX = -O3 -DBUG
+#
+EBX = luli
+OBX = -O3 -Wall -g
+#
+BBX = luli.ox\
+      memory.ox\
+      misc.ox\
+      read.ox
+#
+#
+#
+# build exec on xombul : build
+$(EBX) : $(BBX)
+	$(CCX) $(OBX) -o $@ $^ $(LIB) $(LIF)
+#
+#
+# build the objects
+#
+%.ox : $(SRC)%.c
+	$(CCX) -I $(INC) $(OHX) -c -o $@ $<
+#
+#
+clean :
+	\rm -f *.ox
+#
