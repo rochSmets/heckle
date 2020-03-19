@@ -15,11 +15,12 @@
 #define TPERP 1
 
 
-typedef struct s_2harris
+typedef struct s_harris
 {
     double nb;
     double l;
-    double teti;
+    double tetp;
+    double teta;
     double perturb;
     double bg;
 } Harris;
@@ -68,7 +69,10 @@ void harris_start(struct sti *si, struct stx *sx, char *dir)
     fscandbl(__FILE__, __LINE__, fp, sx->r, &(HarrisParams.l), &(sx->irun));
 
     fscanstr(__FILE__, __LINE__, fp, sx->r, junk, &(sx->irun));
-    fscandbl(__FILE__, __LINE__, fp, sx->r, &(HarrisParams.teti), &(sx->irun));
+    fscandbl(__FILE__, __LINE__, fp, sx->r, &(HarrisParams.tetp), &(sx->irun));
+
+    fscanstr(__FILE__, __LINE__, fp, sx->r, junk, &(sx->irun));
+    fscandbl(__FILE__, __LINE__, fp, sx->r, &(HarrisParams.teta), &(sx->irun));
 
     fscanstr(__FILE__, __LINE__, fp, sx->r, junk, &(sx->irun));
     fscandbl(__FILE__, __LINE__, fp, sx->r, &(HarrisParams.perturb), &(sx->irun));
@@ -84,7 +88,8 @@ void harris_start(struct sti *si, struct stx *sx, char *dir)
        printf("________________ magnetic topology : harris ________\n");
        printf("background density       : %8.4f\n", HarrisParams.nb);
        printf("sheet thickness          : %8.4f\n", HarrisParams.l);
-       printf("electron/ion temeprature : %8.4f\n", HarrisParams.teti);
+       printf("electron/proton temp.    : %8.4f\n", HarrisParams.tetp);
+       printf("electron/alpha temp.     : %8.4f\n", HarrisParams.teta);
        printf("mag. perturb.            : %8.4f\n", HarrisParams.perturb);
        printf("guide field              : %8.4f\n", HarrisParams.bg);
        printf("______________________________________________________\n");
@@ -107,21 +112,27 @@ double harrisDensity(struct sti *si, struct stx *sx,
                      double pos[3], int ispe)
 {
     double y0;
-    double nb, n, l;
+    double n;
 
     //unused but should be defined
     (void)sx;
     (void)ispe;
 
-    nb = HarrisParams.nb;
-    l  = HarrisParams.l;
 
-    /* center of the domain */
-    y0 = (pos[1] - 0.5*  si->l[1]) / l;
+    if (ispe == 1)
+    {
+        y0 = (pos[1] - 0.5*  si->l[1]) / HarrisParams.l;
+        n = 1./(cosh(y0)*cosh(y0));
+    }
+    else if (ispe == 2)
+    {
+        n = HarrisParams.nb;
+    }
+    else
+    {
+        printf("what the fuck is this specie ?\n");
+    }
 
-    /* harris sheet density */
-    n = nb + 1./(cosh(y0)*cosh(y0));
-    //n = 1;
     return n;
 }
 /*===========================================================================*/
@@ -161,7 +172,7 @@ void harrisMagnetic(struct sti *si, struct stx *sx,
     w5 = 2.0*w1/w2;
 
     B[0] = tanh(y0) + (-w5*y0*w3);
-    B[1] = ( (w5 * x0 * w3) );
+    B[1] = w5*x0*w3;
     B[2] = HarrisParams.bg;
 }
 /*===========================================================================*/
@@ -236,27 +247,35 @@ void harrisTemperature(struct sti *si, struct stx *sx,
                        double pos[3], int ispe, double T[2])
 {
     double pmag;
-    double teti;
+    double tetp, teta;
 
     (void)si;
     (void)sx;
     (void)pos;
 
-    teti = HarrisParams.teti;
+    tetp = HarrisParams.tetp;
+    teta = HarrisParams.teta;
 
-    /* asymptotic magnetic field pressure */
     pmag = 0.5;
 
-    if (ispe == 0) // electrons
+    if (ispe == 0)
     {
-        T[TPARA] = pmag * teti / ((1 + teti));
-        T[TPERP] = pmag * teti / ((1 + teti));
+        T[TPARA] = pmag * tetp / ((1 + tetp));
+        T[TPERP] = pmag * tetp / ((1 + tetp));
     }
-
-    else //if (ispe == 1) // protons
+    else if (ispe == 1)
     {
-        T[TPARA] = pmag / ((1 + teti));
-        T[TPERP] = pmag / ((1 + teti));
+        T[TPARA] = pmag / ((1 + tetp));
+        T[TPERP] = pmag / ((1 + tetp));
+    }
+    else if (ispe == 2)
+    {
+        T[TPARA] = pmag * tetp / ((1 + tetp) * teta);
+        T[TPERP] = pmag * tetp / ((1 + tetp) * teta);
+    }
+    else
+    {
+        printf("what the fuck is this ispe value ?\n");
     }
 }
 /*===========================================================================*/
@@ -301,6 +320,12 @@ void harrisCurDrift(struct sti *si, struct stx *sx, double pos[3],
         curdrift[0] *= -1;
         curdrift[1] *= -1;
         curdrift[2] *= -1;
+    }
+    else if (ispe == 2) /* uncomment below for alphas drifting as protons */
+    {
+        //curdrift[0] = 0.0;
+        //curdrift[1] = 0.0;
+        //curdrift[2] = 0.0;
     }
 }
 /*===========================================================================*/

@@ -808,7 +808,7 @@ void readRestarts(HeckleIORestart *ioRestart, struct sti *si, struct stx *sx, Gr
     H5Gclose(timeGroup);
     H5Fclose(ioRestart->fileR);
 
-    // needed to be sure "restarts.h5" is not removed by a rank while another one still need it
+    // needed to be sure "reload.h5" is not removed by a rank while another one still need it
     MPI_Barrier(MPI_COMM_WORLD);
 
      

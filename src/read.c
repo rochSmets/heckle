@@ -82,6 +82,7 @@ void readheckle(struct sti *si, char *dir, int icpu)
     /* max number of macroparticles per subdomain */
     fscanstr(__FILE__, __LINE__, fp, 0, junk, &ir);
     fscanint64(__FILE__, __LINE__, fp, 0, &(si->nm), &ir);
+    fscandbl(__FILE__, __LINE__, fp, 0, &(si->nmin), &ir);
 
     /* open particle boundary and collisions */
     fscanstr(__FILE__, __LINE__, fp, 0, junk, &ir);

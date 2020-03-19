@@ -23,7 +23,7 @@ void ohm(const STI * const si,
          int ipc)
 {
     double dlx, dly, dlz;
-    double dn;
+    double dn, dn0;
     double dpx, dpy, dpz;
     double ljx, ljy, ljz;
     double bw[3];
@@ -37,7 +37,7 @@ void ohm(const STI * const si,
     int ijky, ijkz;
     int m0, m1, m2, n0, n1, n2;
     int nn2;
-#if 1
+
 
     /* __ # of grid points __ */
     m0 = sx->n[0]+1;
@@ -70,7 +70,9 @@ void ohm(const STI * const si,
                 dly = 0.25/(si->dl[1]*s2[ijk].ns[0]);
                 dlz = 0.25/(si->dl[2]*s2[ijk].ns[0]);
 
-                dn = 1.0/s2[ijk].ns[0];
+                dn0 = s2[ijk].ns[0];
+                dn = (dn0 < si->nmin) ? 1.0/si->nmin : 1.0/dn0;
+                //dn = 1.0/s2[ijk].ns[0];
 
                 /* __ set index on g1 __ */
                 ijk1 = IDX(i  , j  , k  , m0, m1, m2);
@@ -304,7 +306,6 @@ void ohm(const STI * const si,
         }
     }
 
-#endif
 
 #ifdef OUTDATED
     /* __ memory allocation __ */

@@ -84,7 +84,8 @@ if (sx.r == 0)
    printf("\n");
    printf("thermal cond.    :%12.6lf\n", si.kapp);
    printf("\n");
-   printf("max # part/node  :%12d\n", si.nm);
+   printf("max # part/node  :%12ld\n", si.nm);
+   printf("min N value (Ohm):%12.6lf\n", si.nmin);
    printf("\n");
 
    switch (si.coll) {
