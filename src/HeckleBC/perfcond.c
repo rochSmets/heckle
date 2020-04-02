@@ -725,7 +725,7 @@ void BC_perfcond_e_z(const STX* const sx, ST2 *s2)
 
     // first check whether the left neighbor is the left side of the simulation
     // domain, only in that case BC are applied.
-    if (sx->nt[NEIGHBOR_BOTTOM] == MPI_PROC_NULL)
+    if (sx->nt[NEIGHBOR_BACK] == MPI_PROC_NULL)
     {
         for (i = 0;  i < n0; i++)
         {
@@ -751,7 +751,7 @@ void BC_perfcond_e_z(const STX* const sx, ST2 *s2)
 
     // first check whether the right neighbor is the left side of the simulation
     // domain, only in that case BC are applied.
-    if (sx->nt[NEIGHBOR_TOP] == MPI_PROC_NULL)
+    if (sx->nt[NEIGHBOR_FRONT] == MPI_PROC_NULL)
     {
         for (i = 0;  i < n0; i++)
         {
@@ -946,7 +946,7 @@ void BC_perfcond_f_z(const STX* const sx, ST2 *s2)
 
     // first check whether the left neighbor is the left side of the simulation
     // domain, only in that case BC are applied.
-    if (sx->nt[NEIGHBOR_BOTTOM] == MPI_PROC_NULL)
+    if (sx->nt[NEIGHBOR_BACK] == MPI_PROC_NULL)
     {
         for (i = 0;  i < n0; i++)
         {
@@ -972,7 +972,7 @@ void BC_perfcond_f_z(const STX* const sx, ST2 *s2)
 
     // first check whether the right neighbor is the left side of the simulation
     // domain, only in that case BC are applied.
-    if (sx->nt[NEIGHBOR_TOP] == MPI_PROC_NULL)
+    if (sx->nt[NEIGHBOR_FRONT] == MPI_PROC_NULL)
     {
         for (i = 0;  i < n0; i++)
         {
@@ -1167,7 +1167,7 @@ void BC_perfcond_j_z(const STX* const sx, ST2 *s2)
 
     // first check whether the left neighbor is the left side of the simulation
     // domain, only in that case BC are applied.
-    if (sx->nt[NEIGHBOR_BOTTOM] == MPI_PROC_NULL)
+    if (sx->nt[NEIGHBOR_BACK] == MPI_PROC_NULL)
     {
         for (i = 0;  i < n0; i++)
         {
@@ -1192,7 +1192,7 @@ void BC_perfcond_j_z(const STX* const sx, ST2 *s2)
 
     // first check whether the right neighbor is the left side of the simulation
     // domain, only in that case BC are applied.
-    if (sx->nt[NEIGHBOR_TOP] == MPI_PROC_NULL)
+    if (sx->nt[NEIGHBOR_FRONT] == MPI_PROC_NULL)
     {
         for (i = 0;  i < n0; i++)
         {
@@ -1201,9 +1201,9 @@ void BC_perfcond_j_z(const STX* const sx, ST2 *s2)
                 ijk0 = IDX(i,j,sx->n[2]+1, n0, n1, n2);
                 ijk1 = IDX(i,j,sx->n[2]  , n0, n1, n2);
 
-                s2[ijk0].j[0] = -s2[ijk1].j[0];
-                s2[ijk0].j[1] = -s2[ijk1].j[1];
-                s2[ijk0].j[2] =  s2[ijk1].j[2];
+                s2[ijk0].j[0] =  s2[ijk1].j[0];
+                s2[ijk0].j[1] =  s2[ijk1].j[1];
+                s2[ijk0].j[2] = -s2[ijk1].j[2];
             } //end k loop
         } // end j loop
     }
