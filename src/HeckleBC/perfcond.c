@@ -333,9 +333,8 @@ void BC_perfcond_nv_x(const STX* const sx, ST2 *s2)
                 ijk0 = IDX(0,j,k, n0, n1, n2);
                 ijk1 = IDX(1,j,k, n0, n1, n2);
 
-                s2[ijk0].ns[0] = s2[ijk1].ns[0];
+                s2[ijk0].ns[0] =  s2[ijk1].ns[0];
 
-                // apply boundary condition Vx=0 (reverse normal component)
                 s2[ijk0].vi[0] = -s2[ijk1].vi[0];
                 s2[ijk0].vi[1] =  s2[ijk1].vi[1];
                 s2[ijk0].vi[2] =  s2[ijk1].vi[2];
@@ -365,14 +364,14 @@ void BC_perfcond_nv_x(const STX* const sx, ST2 *s2)
                 ijk1 = IDX(sx->n[0]  ,j,k, n0, n1, n2);
 
                 s2[ijk0].ns[0] =  s2[ijk1].ns[0];
-                s2[ijk0].vi[0] = -s2[ijk1].vi[0]; // reverse X component
+
+                s2[ijk0].vi[0] = -s2[ijk1].vi[0];
                 s2[ijk0].vi[1] =  s2[ijk1].vi[1];
                 s2[ijk0].vi[2] =  s2[ijk1].vi[2];
 
-                s2[ijk0].j_smoothed[0] = -s2[ijk1].j_smoothed[0]; // reverse X component
+                s2[ijk0].j_smoothed[0] = -s2[ijk1].j_smoothed[0];
                 s2[ijk0].j_smoothed[1] =  s2[ijk1].j_smoothed[1];
                 s2[ijk0].j_smoothed[2] =  s2[ijk1].j_smoothed[2];
-
             } //end k loop
         } // end j loop
     }
@@ -406,7 +405,7 @@ void BC_perfcond_nv_y(const STX* const sx, ST2 *s2)
     /*                        BOTTOM NEIGHBOR                        */
     /* ------------------------------------------------------------- */
 
-    // first check whether the left neighbor is the left side of the simulation
+    // first check whether the bottom neighbor is the left side of the simulation
     // domain, only in that case BC are applied.
     if (sx->nt[NEIGHBOR_BOTTOM] == MPI_PROC_NULL)
     {
@@ -418,14 +417,14 @@ void BC_perfcond_nv_y(const STX* const sx, ST2 *s2)
                 ijk1 = IDX(i,1,k, n0, n1, n2);
 
                 s2[ijk0].ns[0] =  s2[ijk1].ns[0];
+
                 s2[ijk0].vi[0] =  s2[ijk1].vi[0];
-                s2[ijk0].vi[1] = -s2[ijk1].vi[1]; //  reverse y component
+                s2[ijk0].vi[1] = -s2[ijk1].vi[1];
                 s2[ijk0].vi[2] =  s2[ijk1].vi[2];
 
                 s2[ijk0].j_smoothed[0] =  s2[ijk1].j_smoothed[0];
-                s2[ijk0].j_smoothed[1] = -s2[ijk1].j_smoothed[1]; //  reverse y component
+                s2[ijk0].j_smoothed[1] = -s2[ijk1].j_smoothed[1];
                 s2[ijk0].j_smoothed[2] =  s2[ijk1].j_smoothed[2];
-
             } //end k loop
         } // end j loop
     }
@@ -436,7 +435,7 @@ void BC_perfcond_nv_y(const STX* const sx, ST2 *s2)
     /*                           TOP NEIGHBOR                        */
     /* ------------------------------------------------------------- */
 
-    // first check whether the right neighbor is the left side of the simulation
+    // first check whether the top neighbor is the left side of the simulation
     // domain, only in that case BC are applied.
     if (sx->nt[NEIGHBOR_TOP] == MPI_PROC_NULL)
     {
@@ -448,12 +447,13 @@ void BC_perfcond_nv_y(const STX* const sx, ST2 *s2)
                 ijk1 = IDX(i,sx->n[1]  ,k, n0, n1, n2);
 
                 s2[ijk0].ns[0] =  s2[ijk1].ns[0];
+
                 s2[ijk0].vi[0] =  s2[ijk1].vi[0];
-                s2[ijk0].vi[1] = -s2[ijk1].vi[1]; // reverse y component
+                s2[ijk0].vi[1] = -s2[ijk1].vi[1];
                 s2[ijk0].vi[2] =  s2[ijk1].vi[2];
 
                 s2[ijk0].j_smoothed[0] =  s2[ijk1].j_smoothed[0];
-                s2[ijk0].j_smoothed[1] = -s2[ijk1].j_smoothed[1]; // reverse y component
+                s2[ijk0].j_smoothed[1] = -s2[ijk1].j_smoothed[1];
                 s2[ijk0].j_smoothed[2] =  s2[ijk1].j_smoothed[2];
             } //end k loop
         } // end j loop
@@ -490,7 +490,7 @@ void BC_perfcond_nv_z(const STX* const sx, ST2 *s2)
     /*                        BACK NEIGHBOR                          */
     /* ------------------------------------------------------------- */
 
-    // first check whether the left neighbor is the left side of the simulation
+    // first check whether the back neighbor is the left side of the simulation
     // domain, only in that case BC are applied.
     if (sx->nt[NEIGHBOR_BACK] == MPI_PROC_NULL)
     {
@@ -503,14 +503,14 @@ void BC_perfcond_nv_z(const STX* const sx, ST2 *s2)
 
 
                 s2[ijk0].ns[0] =  s2[ijk1].ns[0];
+
                 s2[ijk0].vi[0] =  s2[ijk1].vi[0];
                 s2[ijk0].vi[1] =  s2[ijk1].vi[1];
-                s2[ijk0].vi[2] = -s2[ijk1].vi[2]; // reverse z component
+                s2[ijk0].vi[2] = -s2[ijk1].vi[2];
 
                 s2[ijk0].j_smoothed[0] =  s2[ijk1].j_smoothed[0];
                 s2[ijk0].j_smoothed[1] =  s2[ijk1].j_smoothed[1];
-                s2[ijk0].j_smoothed[2] = -s2[ijk1].j_smoothed[2]; // reverse z component
-
+                s2[ijk0].j_smoothed[2] = -s2[ijk1].j_smoothed[2];
             } //end k loop
         } // end j loop
     }
@@ -521,7 +521,7 @@ void BC_perfcond_nv_z(const STX* const sx, ST2 *s2)
     /*                         FRONT NEIGHBOR                        */
     /* ------------------------------------------------------------- */
 
-    // first check whether the right neighbor is the left side of the simulation
+    // first check whether the front neighbor is the left side of the simulation
     // domain, only in that case BC are applied.
     if (sx->nt[NEIGHBOR_FRONT] == MPI_PROC_NULL)
     {
@@ -533,13 +533,14 @@ void BC_perfcond_nv_z(const STX* const sx, ST2 *s2)
                 ijk1 = IDX(i,j,sx->n[2]  , n0, n1, n2);
 
                 s2[ijk0].ns[0] =   s2[ijk1].ns[0];
+
                 s2[ijk0].vi[0] =   s2[ijk1].vi[0];
                 s2[ijk0].vi[1] =   s2[ijk1].vi[1];
-                s2[ijk0].vi[2] = - s2[ijk1].vi[2]; // reverse z component
+                s2[ijk0].vi[2] = - s2[ijk1].vi[2];
 
                 s2[ijk0].j_smoothed[0] =   s2[ijk1].j_smoothed[0];
                 s2[ijk0].j_smoothed[1] =   s2[ijk1].j_smoothed[1];
-                s2[ijk0].j_smoothed[2] = - s2[ijk1].j_smoothed[2]; // reverse z component
+                s2[ijk0].j_smoothed[2] = - s2[ijk1].j_smoothed[2];
             } //end k loop
         } // end j loop
     }
@@ -585,11 +586,9 @@ void BC_perfcond_e_x(const STX* const sx, ST2 *s2)
                 ijk0 = IDX(0,j,k, n0, n1, n2);
                 ijk1 = IDX(1,j,k, n0, n1, n2);
 
-                // dEx/dx=0, Ey=Ez=0
                 s2[ijk0].e[0] =  s2[ijk1].e[0];
                 s2[ijk0].e[1] = -s2[ijk1].e[1];
                 s2[ijk0].e[2] = -s2[ijk1].e[2];
-
             } //end k loop
         } // end j loop
     }
@@ -648,7 +647,7 @@ void BC_perfcond_e_y(const STX* const sx, ST2 *s2)
     /*                        BOTTOM NEIGHBOR                        */
     /* ------------------------------------------------------------- */
 
-    // first check whether the left neighbor is the left side of the simulation
+    // first check whether the bottom neighbor is the left side of the simulation
     // domain, only in that case BC are applied.
     if (sx->nt[NEIGHBOR_BOTTOM] == MPI_PROC_NULL)
     {
@@ -659,11 +658,9 @@ void BC_perfcond_e_y(const STX* const sx, ST2 *s2)
                 ijk0 = IDX(i,0,k, n0, n1, n2);
                 ijk1 = IDX(i,1,k, n0, n1, n2);
 
-                // dEy/dx=0, Ex=Ez=0
                 s2[ijk0].e[0] = -s2[ijk1].e[0];
                 s2[ijk0].e[1] =  s2[ijk1].e[1];
                 s2[ijk0].e[2] = -s2[ijk1].e[2];
-
             } //end k loop
         } // end j loop
     }
@@ -674,7 +671,7 @@ void BC_perfcond_e_y(const STX* const sx, ST2 *s2)
     /*                           TOP NEIGHBOR                        */
     /* ------------------------------------------------------------- */
 
-    // first check whether the right neighbor is the left side of the simulation
+    // first check whether the top neighbor is the left side of the simulation
     // domain, only in that case BC are applied.
     if (sx->nt[NEIGHBOR_TOP] == MPI_PROC_NULL)
     {
@@ -685,7 +682,6 @@ void BC_perfcond_e_y(const STX* const sx, ST2 *s2)
                 ijk0 = IDX(i,sx->n[1]+1,k, n0, n1, n2);
                 ijk1 = IDX(i,sx->n[1]  ,k, n0, n1, n2);
 
-                // dEy/dx=0, Ex=Ez=0
                 s2[ijk0].e[0] = -s2[ijk1].e[0];
                 s2[ijk0].e[1] =  s2[ijk1].e[1];
                 s2[ijk0].e[2] = -s2[ijk1].e[2];
@@ -723,7 +719,7 @@ void BC_perfcond_e_z(const STX* const sx, ST2 *s2)
     /*                        BACK NEIGHBOR                          */
     /* ------------------------------------------------------------- */
 
-    // first check whether the left neighbor is the left side of the simulation
+    // first check whether the back neighbor is the left side of the simulation
     // domain, only in that case BC are applied.
     if (sx->nt[NEIGHBOR_BACK] == MPI_PROC_NULL)
     {
@@ -734,11 +730,9 @@ void BC_perfcond_e_z(const STX* const sx, ST2 *s2)
                 ijk0 = IDX(i,j,0, n0, n1, n2);
                 ijk1 = IDX(i,j,1, n0, n1, n2);
 
-                // dEz/dz=0, Ex=Ey=0
                 s2[ijk0].e[0] = -s2[ijk1].e[0];
                 s2[ijk0].e[1] = -s2[ijk1].e[1];
                 s2[ijk0].e[2] =  s2[ijk1].e[2];
-
             } //end k loop
         } // end j loop
     }
@@ -749,7 +743,7 @@ void BC_perfcond_e_z(const STX* const sx, ST2 *s2)
     /*                         FRONT NEIGHBOR                        */
     /* ------------------------------------------------------------- */
 
-    // first check whether the right neighbor is the left side of the simulation
+    // first check whether the front neighbor is the left side of the simulation
     // domain, only in that case BC are applied.
     if (sx->nt[NEIGHBOR_FRONT] == MPI_PROC_NULL)
     {
@@ -760,7 +754,6 @@ void BC_perfcond_e_z(const STX* const sx, ST2 *s2)
                 ijk0 = IDX(i,j,sx->n[2]+1, n0, n1, n2);
                 ijk1 = IDX(i,j,sx->n[2]  , n0, n1, n2);
 
-                // dEz/dz=0, Ex=Ey=0
                 s2[ijk0].e[0] = -s2[ijk1].e[0];
                 s2[ijk0].e[1] = -s2[ijk1].e[1];
                 s2[ijk0].e[2] =  s2[ijk1].e[2];
@@ -811,11 +804,9 @@ void BC_perfcond_f_x(const STX* const sx, ST2 *s2)
                 ijk0 = IDX(0,j,k, n0, n1, n2);
                 ijk1 = IDX(1,j,k, n0, n1, n2);
 
-                // dEx/dx=0, Ey=Ez=0
                 s2[ijk0].f[0] =  s2[ijk1].f[0];
                 s2[ijk0].f[1] = -s2[ijk1].f[1];
                 s2[ijk0].f[2] = -s2[ijk1].f[2];
-
             } //end k loop
         } // end j loop
     }
@@ -872,7 +863,7 @@ void BC_perfcond_f_y(const STX* const sx, ST2 *s2)
     /*                        BOTTOM NEIGHBOR                        */
     /* ------------------------------------------------------------- */
 
-    // first check whether the left neighbor is the left side of the simulation
+    // first check whether the bottom neighbor is the left side of the simulation
     // domain, only in that case BC are applied.
     if (sx->nt[NEIGHBOR_BOTTOM] == MPI_PROC_NULL)
     {
@@ -883,11 +874,9 @@ void BC_perfcond_f_y(const STX* const sx, ST2 *s2)
                 ijk0 = IDX(i,0,k, n0, n1, n2);
                 ijk1 = IDX(i,1,k, n0, n1, n2);
 
-                // dEy/dx=0, Ex=Ez=0
                 s2[ijk0].f[0] = -s2[ijk1].f[0];
                 s2[ijk0].f[1] =  s2[ijk1].f[1];
                 s2[ijk0].f[2] = -s2[ijk1].f[2];
-
             } //end k loop
         } // end j loop
     }
@@ -898,7 +887,7 @@ void BC_perfcond_f_y(const STX* const sx, ST2 *s2)
     /*                           TOP NEIGHBOR                        */
     /* ------------------------------------------------------------- */
 
-    // first check whether the right neighbor is the left side of the simulation
+    // first check whether the top neighbor is the left side of the simulation
     // domain, only in that case BC are applied.
     if (sx->nt[NEIGHBOR_TOP] == MPI_PROC_NULL)
     {
@@ -909,7 +898,6 @@ void BC_perfcond_f_y(const STX* const sx, ST2 *s2)
                 ijk0 = IDX(i,sx->n[1]+1,k, n0, n1, n2);
                 ijk1 = IDX(i,sx->n[1]  ,k, n0, n1, n2);
 
-                // dEy/dx=0, Ex=Ez=0
                 s2[ijk0].f[0] = -s2[ijk1].f[0];
                 s2[ijk0].f[1] =  s2[ijk1].f[1];
                 s2[ijk0].f[2] = -s2[ijk1].f[2];
@@ -944,7 +932,7 @@ void BC_perfcond_f_z(const STX* const sx, ST2 *s2)
     /*                        BACK NEIGHBOR                          */
     /* ------------------------------------------------------------- */
 
-    // first check whether the left neighbor is the left side of the simulation
+    // first check whether the back neighbor is the left side of the simulation
     // domain, only in that case BC are applied.
     if (sx->nt[NEIGHBOR_BACK] == MPI_PROC_NULL)
     {
@@ -955,11 +943,9 @@ void BC_perfcond_f_z(const STX* const sx, ST2 *s2)
                 ijk0 = IDX(i,j,0, n0, n1, n2);
                 ijk1 = IDX(i,j,1, n0, n1, n2);
 
-                // dEz/dz=0, Ex=Ey=0
                 s2[ijk0].f[0] = -s2[ijk1].f[0];
                 s2[ijk0].f[1] = -s2[ijk1].f[1];
                 s2[ijk0].f[2] =  s2[ijk1].f[2];
-
             } //end k loop
         } // end j loop
     }
@@ -970,7 +956,7 @@ void BC_perfcond_f_z(const STX* const sx, ST2 *s2)
     /*                         FRONT NEIGHBOR                        */
     /* ------------------------------------------------------------- */
 
-    // first check whether the right neighbor is the left side of the simulation
+    // first check whether the front neighbor is the left side of the simulation
     // domain, only in that case BC are applied.
     if (sx->nt[NEIGHBOR_FRONT] == MPI_PROC_NULL)
     {
@@ -981,7 +967,6 @@ void BC_perfcond_f_z(const STX* const sx, ST2 *s2)
                 ijk0 = IDX(i,j,sx->n[2]+1, n0, n1, n2);
                 ijk1 = IDX(i,j,sx->n[2]  , n0, n1, n2);
 
-                // dEz/dz=0, Ex=Ey=0
                 s2[ijk0].f[0] = -s2[ijk1].f[0];
                 s2[ijk0].f[1] = -s2[ijk1].f[1];
                 s2[ijk0].f[2] =  s2[ijk1].f[2];
@@ -1033,11 +1018,9 @@ void BC_perfcond_j_x(const STX* const sx, ST2 *s2)
                 ijk0 = IDX(0,j,k, n0, n1, n2);
                 ijk1 = IDX(1,j,k, n0, n1, n2);
 
-                // Jx=0, dJ// /dn = 0
                 s2[ijk0].j[0] = -s2[ijk1].j[0];
                 s2[ijk0].j[1] =  s2[ijk1].j[1];
                 s2[ijk0].j[2] =  s2[ijk1].j[2];
-
             } //end k loop
         } // end j loop
     }
@@ -1059,7 +1042,6 @@ void BC_perfcond_j_x(const STX* const sx, ST2 *s2)
                 ijk0 = IDX(sx->n[0]+1,j,k, n0, n1, n2);
                 ijk1 = IDX(sx->n[0]  ,j,k, n0, n1, n2);
 
-                // Jx=0, dJ// /dn = 0
                 s2[ijk0].j[0] = -s2[ijk1].j[0];
                 s2[ijk0].j[1] =  s2[ijk1].j[1];
                 s2[ijk0].j[2] =  s2[ijk1].j[2];
@@ -1109,7 +1091,6 @@ void BC_perfcond_j_y(const STX* const sx, ST2 *s2)
                 s2[ijk0].j[0] =  s2[ijk1].j[0];
                 s2[ijk0].j[1] = -s2[ijk1].j[1];
                 s2[ijk0].j[2] =  s2[ijk1].j[2];
-
             } //end k loop
         } // end j loop
     }
@@ -1120,7 +1101,7 @@ void BC_perfcond_j_y(const STX* const sx, ST2 *s2)
     /*                           TOP NEIGHBOR                        */
     /* ------------------------------------------------------------- */
 
-    // first check whether the right neighbor is the left side of the simulation
+    // first check whether the top neighbor is the left side of the simulation
     // domain, only in that case BC are applied.
     if (sx->nt[NEIGHBOR_TOP] == MPI_PROC_NULL)
     {
@@ -1165,7 +1146,7 @@ void BC_perfcond_j_z(const STX* const sx, ST2 *s2)
     /*                        BACK NEIGHBOR                          */
     /* ------------------------------------------------------------- */
 
-    // first check whether the left neighbor is the left side of the simulation
+    // first check whether the back neighbor is the left side of the simulation
     // domain, only in that case BC are applied.
     if (sx->nt[NEIGHBOR_BACK] == MPI_PROC_NULL)
     {
@@ -1179,7 +1160,6 @@ void BC_perfcond_j_z(const STX* const sx, ST2 *s2)
                 s2[ijk0].j[0] =  s2[ijk1].j[0];
                 s2[ijk0].j[1] =  s2[ijk1].j[1];
                 s2[ijk0].j[2] = -s2[ijk1].j[2];
-
             } //end k loop
         } // end j loop
     }
@@ -1190,7 +1170,7 @@ void BC_perfcond_j_z(const STX* const sx, ST2 *s2)
     /*                         FRONT NEIGHBOR                        */
     /* ------------------------------------------------------------- */
 
-    // first check whether the right neighbor is the left side of the simulation
+    // first check whether the front neighbor is the left side of the simulation
     // domain, only in that case BC are applied.
     if (sx->nt[NEIGHBOR_FRONT] == MPI_PROC_NULL)
     {
@@ -1252,7 +1232,6 @@ void BC_perfcond_P_x(const STX* const sx, ST2 *s2)
                 ijk0 = IDX(0,j,k, n0, n1, n2);
                 ijk1 = IDX(1,j,k, n0, n1, n2);
 
-
                 for (ispe=1; ispe <= NS; ispe++)
                 {
                     for (c=0; c < 6; c++)
@@ -1282,7 +1261,6 @@ void BC_perfcond_P_x(const STX* const sx, ST2 *s2)
             {
                 ijk0 = IDX(sx->n[0]+1,j,k, n0, n1, n2);
                 ijk1 = IDX(sx->n[0]  ,j,k, n0, n1, n2);
-
 
                 for (ispe=1; ispe <= NS; ispe++)
                 {
@@ -1422,7 +1400,6 @@ void BC_perfcond_P_z(const STX* const sx, ST2 *s2)
             {
                 ijk0 = IDX(i,j,0, n0, n1, n2);
                 ijk1 = IDX(i,j,1, n0, n1, n2);
-
 
                 for (ispe=1; ispe <= NS; ispe++)
                 {

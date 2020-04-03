@@ -765,8 +765,8 @@ void nlasersDrive(struct sti si, struct stx sx, Grid0 *s0, ST1 *s1, ST2 *s2, Par
             }
         }
 
-    if (sx.r == 0 && ipc == 0) {
-        printf("________________ driven system : %12.8f ________\n", timeA);
-    }
+    //if (sx.r == 0 && ipc == 0) {
+    //    printf("________________ driven system : %12.8f ________\n", timeA);
+    //}
 }
 
