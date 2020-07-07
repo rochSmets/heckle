@@ -29,7 +29,7 @@
    //                                                                       //
    /////////////////////////////////////////////////////////////////////////// */
 
-typedef struct s_model
+typedef struct close_model
 {
     int model;
 
@@ -41,7 +41,7 @@ typedef struct s_model
 
 
 /* this structure is for private use only. */
-CloseModel MyModel;
+CloseModel MyCloseModel;
 
 
 
@@ -70,8 +70,8 @@ void closeModelStart(struct sti *si, struct stx *sx, char *dir)
         /* ---------------------------------------------------------------- */
         case CLOSE_ISOTHERM:
 
-            MyModel.model       = CLOSE_ISOTHERM;
-            MyModel.pressure    = isothermPressure;
+            MyCloseModel.model       = CLOSE_ISOTHERM;
+            MyCloseModel.pressure    = isothermPressure;
         break;
 
 #ifdef FULLP
@@ -80,8 +80,8 @@ void closeModelStart(struct sti *si, struct stx *sx, char *dir)
         /* ---------------------------------------------------------------- */
         case CLOSE_FULLIMPL:
 
-            MyModel.model       = CLOSE_FULLIMPL;
-            MyModel.pressure    = implicitPressure;
+            MyCloseModel.model       = CLOSE_FULLIMPL;
+            MyCloseModel.pressure    = implicitPressure;
         break;
 
         /* ---------------------------------------------------------------- */
@@ -89,21 +89,21 @@ void closeModelStart(struct sti *si, struct stx *sx, char *dir)
         /* ---------------------------------------------------------------- */
         case CLOSE_FULLSUB:
 
-            MyModel.model       = CLOSE_FULLSUB;
-            MyModel.pressure    = subCycledPressure;
+            MyCloseModel.model       = CLOSE_FULLSUB;
+            MyCloseModel.pressure    = subCycledPressure;
         break;
 #endif
         case CLOSE_POLYTROP:
-            MyModel.model       = CLOSE_POLYTROP;
-            MyModel.pressure    = polytropPressure;
+            MyCloseModel.model       = CLOSE_POLYTROP;
+            MyCloseModel.pressure    = polytropPressure;
         break;
 #if 0
         /* ---------------------------------------------------------------- */
         /*               EXAMPLE OF NON_DEFINED MODEL                       */
         /* ---------------------------------------------------------------- */
         case CLOSE_TODEFINE:
-            MyModel.model       = CLOSE_TODEFINE;
-            MyModel.pressure    = todefinePressure;
+            MyCloseModel.model       = CLOSE_TODEFINE;
+            MyCloseModel.pressure    = todefinePressure;
         break;
 
 #endif
@@ -129,6 +129,6 @@ void closeModelPressure(int it,
                         Ghosts *ghosts,
                         int ipc)
 {
-    MyModel.pressure(it, si, sx, s1, s2, hbc, ghosts, ipc);
+    MyCloseModel.pressure(it, si, sx, s1, s2, hbc, ghosts, ipc);
 }
 

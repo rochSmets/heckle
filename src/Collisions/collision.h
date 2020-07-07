@@ -16,17 +16,30 @@
   ---------------------------------------------------------------------------
   AIM : wrapper for all kind of collisions
  ---------------------------------------------------------------------------*/
-void (*collision)(Collision sc,
-                  STI si,
-                  STX sx,
-                  struct std *sd,
-                  Grid0 *s0,
-                  ST1 *s1,
-                  ST2 *s2,
-                  Particle *sp[NS+1],
-                  Ghosts *ghosts,
-                  HeckleBC *hbc,
-                  int ipc);
+void collisionModel (Collision sc,
+                     STI si,
+                     STX sx,
+                     struct std *sd,
+                     Grid0 *s0,
+                     ST1 *s1,
+                     ST2 *s2,
+                     Particle *sp[NS+1],
+                     Ghosts *ghosts,
+                     HeckleBC *hbc,
+                     int ipc);
+
+
+//void (*collision)(Collision sc,
+//                  STI si,
+//                  STX sx,
+//                  struct std *sd,
+//                  Grid0 *s0,
+//                  ST1 *s1,
+//                  ST2 *s2,
+//                  Particle *sp[NS+1],
+//                  Ghosts *ghosts,
+//                  HeckleBC *hbc,
+//                  int ipc);
 
 
 /*---------------------------------------------------------------------------

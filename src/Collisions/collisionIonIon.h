@@ -122,22 +122,22 @@ void ionIonCollision(Collision sc,
                      int ipc);
 
 
-/*---------------------------------------------------------------------------
-  collision()
-  ---------------------------------------------------------------------------
-  AIM : wrapper for all kind of collisions
- ---------------------------------------------------------------------------*/
-void (*collision)(Collision sc,
-                  STI si,
-                  STX sx,
-                  struct std *sd,
-                  Grid0 *s0,
-                  ST1 *s1,
-                  ST2 *s2,
-                  Particle *sp[NS+1],
-                  Ghosts *ghosts,
-                  HeckleBC *hbc,
-                  int ipc);
+///*---------------------------------------------------------------------------
+//  collision()
+//  ---------------------------------------------------------------------------
+//  AIM : wrapper for all kind of collisions
+// ---------------------------------------------------------------------------*/
+//void (*collision)(Collision sc,
+//                  STI si,
+//                  STX sx,
+//                  struct std *sd,
+//                  Grid0 *s0,
+//                  ST1 *s1,
+//                  ST2 *s2,
+//                  Particle *sp[NS+1],
+//                  Ghosts *ghosts,
+//                  HeckleBC *hbc,
+//                  int ipc);
 
 #endif // __COLLISION_ION_ION_H__
 

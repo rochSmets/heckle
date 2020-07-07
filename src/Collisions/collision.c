@@ -15,6 +15,55 @@
 #define SWAP(type, a, b) do { type t=(a); (a)=(b); (b)=t; } while (0)
 
 
+typedef struct collision_model
+{
+
+    void (*collision)(Collision sc,
+                      STI si,
+                      STX sx,
+                      struct std *sd,
+                      Grid0 *s0,
+                      ST1 *s1,
+                      ST2 *s2,
+                      Particle *sp[NS+1],
+                      Ghosts *ghosts,
+                      HeckleBC *hbc,
+                      int ipc);
+
+
+} CollisionModel;
+
+
+/* __ private use __ */
+CollisionModel myCollisionModel;
+
+
+void collisionModel(Collision sc,
+                    STI si,
+                    STX sx,
+                    struct std *sd,
+                    Grid0 *s0,
+                    ST1 *s1,
+                    ST2 *s2,
+                    Particle *sp[NS+1],
+                    Ghosts *ghosts,
+                    HeckleBC *hbc,
+                    int ipc)
+
+{
+    myCollisionModel.collision(sc,
+                               si,
+                               sx,
+                               sd,
+                               s0,
+                               s1,
+                               s2,
+                               sp,
+                               ghosts,
+                               hbc,
+                               ipc);
+}
+
 
 void collision1(Collision sc,
                 STI si,
@@ -76,7 +125,7 @@ Collision setCollision(struct sti si,
 
     switch(si.coll) {
         case 1 : // ion-ion collisions
-            collision = collision1;
+            myCollisionModel.collision = collision1;
         break;
 
         case 2 : // ion-electron collisions
@@ -113,6 +162,13 @@ Collision setCollision(struct sti si,
     return sc;
 
 }
+
+
+
+
+
+
+
 
 
 

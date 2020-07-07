@@ -32,7 +32,7 @@
    //                                                                       //
    /////////////////////////////////////////////////////////////////////////// */
 
-typedef struct s_model
+typedef struct init_model
 {
     int model;
 
@@ -65,7 +65,7 @@ typedef struct s_model
 
 
 /* this structure is for private use only. */
-InitModel MyModel;
+InitModel MyInitModel;
 
 
 
@@ -94,16 +94,16 @@ void initModelStart(struct sti *si, struct stx *sx, char *dir)
         /* ---------------------------------------------------------------- */
         case INITMODEL_DOUBLEHARRIS:
 
-            MyModel.model       = INITMODEL_DOUBLEHARRIS;
-            MyModel.start       = doubleharris_start;
-            MyModel.magnetic    = doubleharrisMagnetic;
-            MyModel.electric    = doubleharrisElectric;
-            MyModel.current     = doubleharrisCurrent;
-            MyModel.drift       = doubleharrisDrift;
-            MyModel.curdrift    = doubleharrisCurDrift;
-            MyModel.density     = doubleharrisDensity;
-            MyModel.temperature = doubleharrisTemperature;
-            MyModel.drive       = doubleharrisDrive;
+            MyInitModel.model       = INITMODEL_DOUBLEHARRIS;
+            MyInitModel.start       = doubleharris_start;
+            MyInitModel.magnetic    = doubleharrisMagnetic;
+            MyInitModel.electric    = doubleharrisElectric;
+            MyInitModel.current     = doubleharrisCurrent;
+            MyInitModel.drift       = doubleharrisDrift;
+            MyInitModel.curdrift    = doubleharrisCurDrift;
+            MyInitModel.density     = doubleharrisDensity;
+            MyInitModel.temperature = doubleharrisTemperature;
+            MyInitModel.drive       = doubleharrisDrive;
         break;
 
 
@@ -113,16 +113,16 @@ void initModelStart(struct sti *si, struct stx *sx, char *dir)
         /* ---------------------------------------------------------------- */
         case INITMODEL_HARRIS:
 
-            MyModel.model       = INITMODEL_HARRIS;
-            MyModel.start       = harris_start;
-            MyModel.magnetic    = harrisMagnetic;
-            MyModel.electric    = harrisElectric;
-            MyModel.current     = harrisCurrent;
-            MyModel.drift       = harrisDrift;
-            MyModel.curdrift    = harrisCurDrift;
-            MyModel.density     = harrisDensity;
-            MyModel.temperature = harrisTemperature;
-            MyModel.drive       = harrisDrive;
+            MyInitModel.model       = INITMODEL_HARRIS;
+            MyInitModel.start       = harris_start;
+            MyInitModel.magnetic    = harrisMagnetic;
+            MyInitModel.electric    = harrisElectric;
+            MyInitModel.current     = harrisCurrent;
+            MyInitModel.drift       = harrisDrift;
+            MyInitModel.curdrift    = harrisCurDrift;
+            MyInitModel.density     = harrisDensity;
+            MyInitModel.temperature = harrisTemperature;
+            MyInitModel.drive       = harrisDrive;
         break;
 
 
@@ -131,16 +131,16 @@ void initModelStart(struct sti *si, struct stx *sx, char *dir)
         /*                       UNIFORM DENSITY                            */
         /* ---------------------------------------------------------------- */
         case INITMODEL_UNIFORM:
-            MyModel.model       = INITMODEL_UNIFORM;
-            MyModel.start       = uniform_start;
-            MyModel.magnetic    = uniformMagnetic;
-            MyModel.electric    = uniformElectric;
-            MyModel.current     = uniformCurrent;
-            MyModel.drift       = uniformDrift;
-            MyModel.curdrift    = uniformCurDrift;
-            MyModel.density     = uniformDensity;
-            MyModel.temperature = uniformTemperature;
-            MyModel.drive       = uniformDrive;
+            MyInitModel.model       = INITMODEL_UNIFORM;
+            MyInitModel.start       = uniform_start;
+            MyInitModel.magnetic    = uniformMagnetic;
+            MyInitModel.electric    = uniformElectric;
+            MyInitModel.current     = uniformCurrent;
+            MyInitModel.drift       = uniformDrift;
+            MyInitModel.curdrift    = uniformCurDrift;
+            MyInitModel.density     = uniformDensity;
+            MyInitModel.temperature = uniformTemperature;
+            MyInitModel.drive       = uniformDrive;
         break;
 
 
@@ -149,16 +149,16 @@ void initModelStart(struct sti *si, struct stx *sx, char *dir)
         /*               ASYMMETRIC RECONNECTION ANGLE                      */
         /* ---------------------------------------------------------------- */
         case INITMODEL_ASYMANGLE:
-            MyModel.model       = INITMODEL_ASYMANGLE;
-            MyModel.start       = asymangle_start;
-            MyModel.magnetic    = asymangleMagnetic;
-            MyModel.electric    = asymangleElectric;
-            MyModel.current     = asymangleCurrent;
-            MyModel.drift       = asymangleDrift;
-            MyModel.curdrift    = asymangleCurDrift;
-            MyModel.density     = asymangleDensity;
-            MyModel.temperature = asymangleTemperature;
-            MyModel.drive       = asymangleDrive;
+            MyInitModel.model       = INITMODEL_ASYMANGLE;
+            MyInitModel.start       = asymangle_start;
+            MyInitModel.magnetic    = asymangleMagnetic;
+            MyInitModel.electric    = asymangleElectric;
+            MyInitModel.current     = asymangleCurrent;
+            MyInitModel.drift       = asymangleDrift;
+            MyInitModel.curdrift    = asymangleCurDrift;
+            MyInitModel.density     = asymangleDensity;
+            MyInitModel.temperature = asymangleTemperature;
+            MyInitModel.drive       = asymangleDrive;
         break;
 
 
@@ -167,16 +167,16 @@ void initModelStart(struct sti *si, struct stx *sx, char *dir)
         /*               N BEAMS                                            */
         /* ---------------------------------------------------------------- */
         case INITMODEL_NBEAMS:
-            MyModel.model       = INITMODEL_NBEAMS;
-            MyModel.start       = nbeams_start;
-            MyModel.magnetic    = nbeamsMagnetic;
-            MyModel.electric    = nbeamsElectric;
-            MyModel.current     = nbeamsCurrent;
-            MyModel.drift       = nbeamsDrift;
-            MyModel.curdrift    = nbeamsCurDrift;
-            MyModel.density     = nbeamsDensity;
-            MyModel.temperature = nbeamsTemperature;
-            MyModel.drive       = nbeamsDrive;
+            MyInitModel.model       = INITMODEL_NBEAMS;
+            MyInitModel.start       = nbeams_start;
+            MyInitModel.magnetic    = nbeamsMagnetic;
+            MyInitModel.electric    = nbeamsElectric;
+            MyInitModel.current     = nbeamsCurrent;
+            MyInitModel.drift       = nbeamsDrift;
+            MyInitModel.curdrift    = nbeamsCurDrift;
+            MyInitModel.density     = nbeamsDensity;
+            MyInitModel.temperature = nbeamsTemperature;
+            MyInitModel.drive       = nbeamsDrive;
         break;
 
 
@@ -185,16 +185,16 @@ void initModelStart(struct sti *si, struct stx *sx, char *dir)
         /*               SHEAR B                                            */
         /* ---------------------------------------------------------------- */
         case INITMODEL_SHEARB:
-            MyModel.model       = INITMODEL_SHEARB;
-            MyModel.start       = shearB_start;
-            MyModel.magnetic    = shearBMagnetic;
-            MyModel.electric    = shearBElectric;
-            MyModel.current     = shearBCurrent;
-            MyModel.drift       = shearBDrift;
-            MyModel.curdrift    = shearBCurDrift;
-            MyModel.density     = shearBDensity;
-            MyModel.temperature = shearBTemperature;
-            MyModel.drive       = shearBDrive;
+            MyInitModel.model       = INITMODEL_SHEARB;
+            MyInitModel.start       = shearB_start;
+            MyInitModel.magnetic    = shearBMagnetic;
+            MyInitModel.electric    = shearBElectric;
+            MyInitModel.current     = shearBCurrent;
+            MyInitModel.drift       = shearBDrift;
+            MyInitModel.curdrift    = shearBCurDrift;
+            MyInitModel.density     = shearBDensity;
+            MyInitModel.temperature = shearBTemperature;
+            MyInitModel.drive       = shearBDrive;
         break;
 
 
@@ -203,16 +203,16 @@ void initModelStart(struct sti *si, struct stx *sx, char *dir)
         /*               LASERS                                             */
         /* ---------------------------------------------------------------- */
         case INITMODEL_NLASERS:
-            MyModel.model       = INITMODEL_NLASERS;
-            MyModel.start       = nlasers_start;
-            MyModel.magnetic    = nlasersMagnetic;
-            MyModel.electric    = nlasersElectric;
-            MyModel.current     = nlasersCurrent;
-            MyModel.drift       = nlasersDrift;
-            MyModel.curdrift    = nlasersCurDrift;
-            MyModel.density     = nlasersDensity;
-            MyModel.temperature = nlasersTemperature;
-            MyModel.drive       = nlasersDrive;
+            MyInitModel.model       = INITMODEL_NLASERS;
+            MyInitModel.start       = nlasers_start;
+            MyInitModel.magnetic    = nlasersMagnetic;
+            MyInitModel.electric    = nlasersElectric;
+            MyInitModel.current     = nlasersCurrent;
+            MyInitModel.drift       = nlasersDrift;
+            MyInitModel.curdrift    = nlasersCurDrift;
+            MyInitModel.density     = nlasersDensity;
+            MyInitModel.temperature = nlasersTemperature;
+            MyInitModel.drive       = nlasersDrive;
         break;
 
 #if 0
@@ -220,15 +220,15 @@ void initModelStart(struct sti *si, struct stx *sx, char *dir)
         /*               EXAMPLE OF NON_DEFINED MODEL                       */
         /* ---------------------------------------------------------------- */
         case INITMODEL_TODEFINE:
-            MyModel.model       = INITMODEL_TODEFINE;
-            MyModel.start       = todefine_start;
-            MyModel.magnetic    = todefineMagnetic;
-            MyModel.electric    = todefineElectric;
-            MyModel.current     = todefineCurrent;
-            MyModel.drift       = todefineDrift;
-            MyModel.curdrift    = todefineCurDrift;
-            MyModel.density     = todefineDensity;
-            MyModel.temperature = todefineTemperature;
+            MyInitModel.model       = INITMODEL_TODEFINE;
+            MyInitModel.start       = todefine_start;
+            MyInitModel.magnetic    = todefineMagnetic;
+            MyInitModel.electric    = todefineElectric;
+            MyInitModel.current     = todefineCurrent;
+            MyInitModel.drift       = todefineDrift;
+            MyInitModel.curdrift    = todefineCurDrift;
+            MyInitModel.density     = todefineDensity;
+            MyInitModel.temperature = todefineTemperature;
         break;
 
 #endif
@@ -237,7 +237,7 @@ void initModelStart(struct sti *si, struct stx *sx, char *dir)
         break;
     }
 
-    MyModel.start(si, sx, dir);
+    MyInitModel.start(si, sx, dir);
 }
 /*===========================================================================*/
 
@@ -248,7 +248,7 @@ void initModelStart(struct sti *si, struct stx *sx, char *dir)
 
 void initModelMagnetic(struct sti *si, struct stx *sx, double pos[3], double B[3])
 {
-    MyModel.magnetic(si, sx, pos, B);
+    MyInitModel.magnetic(si, sx, pos, B);
 }
 
 /*===========================================================================*/
@@ -259,7 +259,7 @@ void initModelMagnetic(struct sti *si, struct stx *sx, double pos[3], double B[3
 
 void initModelElectric(struct sti *si, struct stx *sx, double pos[3], double E[3])
 {
-    MyModel.electric(si, sx, pos, E);
+    MyInitModel.electric(si, sx, pos, E);
 }
 
 /*===========================================================================*/
@@ -271,7 +271,7 @@ void initModelElectric(struct sti *si, struct stx *sx, double pos[3], double E[3
 
 void initModelCurrent(struct sti *si, struct stx *sx, double pos[3], double J[3])
 {
-    MyModel.current(si, sx, pos, J);
+    MyInitModel.current(si, sx, pos, J);
 }
 
 
@@ -282,7 +282,7 @@ void initModelCurrent(struct sti *si, struct stx *sx, double pos[3], double J[3]
 
 double initModelDensity(struct sti *si, struct stx *sx, double pos[3], int speciesID)
 {
-    return MyModel.density(si, sx, pos, speciesID);
+    return MyInitModel.density(si, sx, pos, speciesID);
 }
 
 
@@ -293,7 +293,7 @@ double initModelDensity(struct sti *si, struct stx *sx, double pos[3], int speci
 void initModelTemperature(struct sti *si, struct stx *sx,
                       double pos[3], int ispe, double T[2])
 {
-    MyModel.temperature(si, sx, pos, ispe, T);
+    MyInitModel.temperature(si, sx, pos, ispe, T);
 }
 
 /*===========================================================================*/
@@ -305,7 +305,7 @@ void initModelTemperature(struct sti *si, struct stx *sx,
 void initModelCurDrift(struct sti *si, struct stx *sx,
                    double pos[3], int ispe, double curdrift[3])
 {
-    MyModel.curdrift(si, sx, pos, ispe, curdrift);
+    MyInitModel.curdrift(si, sx, pos, ispe, curdrift);
 }
 
 
@@ -319,14 +319,14 @@ void initModelDrift(struct sti *si,
                 int ispe,
                 double vdrift[3])
 {
-    MyModel.drift(si, sx, pos, ispe, vdrift);
+    MyInitModel.drift(si, sx, pos, ispe, vdrift);
 }
 
 
 void initModelDrive(struct sti si, struct stx sx, Grid0 *s0, ST1 *s1, ST2 *s2, Particle *sp[NS+1], int ipc, int it)
 {
 
-    MyModel.drive(si, sx, s0, s1, s2, sp, ipc, it);
+    MyInitModel.drive(si, sx, s0, s1, s2, sp, ipc, it);
 
 }
 

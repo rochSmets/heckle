@@ -95,7 +95,7 @@ int main(int ac, char **av)
 
         /* __ call the collision operator __ */
         if (si.coll != 0) {
-            collision(sc, si, sx, &sd, s0, s1, s2, sp, ghosts, hbc, ipc);
+            collisionModel(sc, si, sx, &sd, s0, s1, s2, sp, ghosts, hbc, ipc);
         }
 
         /* __ move particles and accumulate density and bulk vel. __ */
@@ -138,7 +138,7 @@ int main(int ac, char **av)
         ipc = 1;
 
         if (si.coll != 0) {
-            collision(sc, si, sx, &sd, s0, s1, s2, sp, ghosts, hbc, ipc);
+            collisionModel(sc, si, sx, &sd, s0, s1, s2, sp, ghosts, hbc, ipc);
         }
 
         /* __ move particles and accumulate density and bulk vel. __ */
