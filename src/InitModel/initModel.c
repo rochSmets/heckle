@@ -19,6 +19,7 @@
 #include <initModelNBeams.h>
 #include <initModelShearB.h>
 #include <initModelNLasers.h>
+#include <initModelNhotSpots.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <Particle/particle.h>
@@ -200,7 +201,7 @@ void initModelStart(struct sti *si, struct stx *sx, char *dir)
 
 
         /* ---------------------------------------------------------------- */
-        /*               LASERS                                             */
+        /*               N LASERS                                           */
         /* ---------------------------------------------------------------- */
         case INITMODEL_NLASERS:
             MyInitModel.model       = INITMODEL_NLASERS;
@@ -214,6 +215,26 @@ void initModelStart(struct sti *si, struct stx *sx, char *dir)
             MyInitModel.temperature = nlasersTemperature;
             MyInitModel.drive       = nlasersDrive;
         break;
+
+
+
+       /* ---------------------------------------------------------------- */
+       /*               N HOTSPOTS                                         */
+       /* ---------------------------------------------------------------- */
+       case INITMODEL_NHOTSPOTS:
+           MyInitModel.model       = INITMODEL_NHOTSPOTS;
+           MyInitModel.start       = nhotspots_start;
+           MyInitModel.magnetic    = nhotspotsMagnetic;
+           MyInitModel.electric    = nhotspotsElectric;
+           MyInitModel.current     = nhotspotsCurrent;
+           MyInitModel.drift       = nhotspotsDrift;
+           MyInitModel.curdrift    = nhotspotsCurDrift;
+           MyInitModel.density     = nhotspotsDensity;
+           MyInitModel.temperature = nhotspotsTemperature;
+           MyInitModel.drive       = nhotspotsDrive;
+       break;
+
+
 
 #if 0
         /* ---------------------------------------------------------------- */

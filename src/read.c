@@ -34,6 +34,7 @@ void readheckle(struct sti *si, char *dir, int icpu)
     char *nbeams      = "Nbeams";
     char *shearb      = "shearB";
     char *nlasers     = "Nlasers";
+    char *nhotspots   = "NhotSpots";
     char *isotherm    = "isotherm";
     char *polytrop    = "polytrop";
     char *fullimpl    = "fullimpl";
@@ -164,6 +165,11 @@ void readheckle(struct sti *si, char *dir, int icpu)
     else if (strcmp(nlasers,modelname) == 0)
     {
         si->InitModelID = INITMODEL_NLASERS;
+        si->drive = 1;
+    }
+    else if (strcmp(nhotspots,modelname) == 0)
+    {
+        si->InitModelID = INITMODEL_NHOTSPOTS;
         si->drive = 1;
     }
     else

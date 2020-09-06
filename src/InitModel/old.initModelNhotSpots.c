@@ -1,6 +1,5 @@
 
 
-
 #include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,38 +17,37 @@
 #define MAXNBEAMS 16
 
 
-typedef struct s_nbeams
+typedef struct s_nhotspots
 {
     int N;
     double fi[MAXNBEAMS];
     double psi[MAXNBEAMS];
     double b[MAXNBEAMS];
     double n[NS+1][MAXNBEAMS];
-    double V[NS+1][MAXNBEAMS];
     double T[NS+1][MAXNBEAMS];
     double axisX[MAXNBEAMS];
     double axisY[MAXNBEAMS];
     double widthRatio[MAXNBEAMS];
     double thick[MAXNBEAMS];
     double center[MAXNBEAMS][3];
-} NBeams;
+} NhotSpots;
 
 
 
 
 /* this is for private use only */
-NBeams NBeamsParams;
+NhotSpots NhotSpotsParams;
 
 
 
 
 
 /*---------------------------------------------------------------------------
-    nbeams_start()
+    nhotspots_start()
   ---------------------------------------------------------------------------
-    AIM : read the parameters for nbeams model
+    AIM : read the parameters for nhotspots model
  ---------------------------------------------------------------------------*/
-void nbeams_start(struct sti *si, struct stx *sx, char *dir)
+void nhotspots_start(struct sti *si, struct stx *sx, char *dir)
 {
     int g, h;
     char sfh[80];
@@ -61,7 +59,7 @@ void nbeams_start(struct sti *si, struct stx *sx, char *dir)
 
     /* __ build the file name __ */
     strcpy(sfh, dir);
-    strcat(sfh, "Nbeams.txt");
+    strcat(sfh, "NhotSpots.txt");
 
     /* __ read the topology parameters __ */
     fp = fopen(sfh, "r");
@@ -71,100 +69,75 @@ void nbeams_start(struct sti *si, struct stx *sx, char *dir)
     }
 
     fscanstr(__FILE__, __LINE__, fp, sx->r, junk, &(sx->irun));
-    fscanint(__FILE__, __LINE__, fp, sx->r, &(NBeamsParams.N), &(sx->irun));
-    if (NBeamsParams.N > MAXNBEAMS) {
+    fscanint(__FILE__, __LINE__, fp, sx->r, &(NhotSpotsParams.N), &(sx->irun));
+    if (NhotSpotsParams.N > MAXNBEAMS) {
         printf("too many beams in this initialization : increase MAXNBEAMS\n");
     }
 
     fscanstr(__FILE__, __LINE__, fp, sx->r, junk, &(sx->irun));
-    for (h = 0; h < NBeamsParams.N; h++) {
-        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NBeamsParams.fi[h]), &(sx->irun));
+    for (h = 0; h < NhotSpotsParams.N; h++) {
+        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NhotSpotsParams.fi[h]), &(sx->irun));
     }
 
     fscanstr(__FILE__, __LINE__, fp, sx->r, junk, &(sx->irun));
-    for (h = 0; h < NBeamsParams.N; h++) {
-        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NBeamsParams.psi[h]), &(sx->irun));
+    for (h = 0; h < NhotSpotsParams.N; h++) {
+        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NhotSpotsParams.psi[h]), &(sx->irun));
     }
 
     fscanstr(__FILE__, __LINE__, fp, sx->r, junk, &(sx->irun));
-    for (h = 0; h < NBeamsParams.N; h++) {
-        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NBeamsParams.b[h]), &(sx->irun));
+    for (h = 0; h < NhotSpotsParams.N; h++) {
+        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NhotSpotsParams.b[h]), &(sx->irun));
     }
 
     fscanstr(__FILE__, __LINE__, fp, sx->r, junk, &(sx->irun));
-    for (h = 0; h < NBeamsParams.N; h++) {
-        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NBeamsParams.n[1][h]), &(sx->irun));
+    for (h = 0; h < NhotSpotsParams.N; h++) {
+        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NhotSpotsParams.n[1][h]), &(sx->irun));
     }
 
     fscanstr(__FILE__, __LINE__, fp, sx->r, junk, &(sx->irun));
-    fscandbl(__FILE__, __LINE__, fp, sx->r, &(NBeamsParams.n[2][0]), &(sx->irun));
-    for (h = 1; h < NBeamsParams.N; h++) {
-        NBeamsParams.n[2][h] = NBeamsParams.n[2][0];
-    }
-
-    for (h = 0; h < NBeamsParams.N; h++) {
-        NBeamsParams.V[0][h] = 0.0;
+    fscandbl(__FILE__, __LINE__, fp, sx->r, &(NhotSpotsParams.T[0][0]), &(sx->irun));
+    for (h = 1; h < NhotSpotsParams.N; h++) {
+        NhotSpotsParams.T[0][h] = NhotSpotsParams.T[0][0];
     }
 
     fscanstr(__FILE__, __LINE__, fp, sx->r, junk, &(sx->irun));
-    for (h = 0; h < NBeamsParams.N; h++) {
-        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NBeamsParams.V[1][h]), &(sx->irun));
-    }
-
-    for (h = 0; h < NBeamsParams.N; h++) {
-        NBeamsParams.V[2][h] = 0.0;
+    for (h = 0; h < NhotSpotsParams.N; h++) {
+        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NhotSpotsParams.T[1][h]), &(sx->irun));
     }
 
     fscanstr(__FILE__, __LINE__, fp, sx->r, junk, &(sx->irun));
-    fscandbl(__FILE__, __LINE__, fp, sx->r, &(NBeamsParams.T[0][0]), &(sx->irun));
-    for (h = 1; h < NBeamsParams.N; h++) {
-        NBeamsParams.T[0][h] = NBeamsParams.T[0][0];
+    for (h = 0; h < NhotSpotsParams.N; h++) {
+        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NhotSpotsParams.axisX[h]), &(sx->irun));
     }
 
     fscanstr(__FILE__, __LINE__, fp, sx->r, junk, &(sx->irun));
-    for (h = 0; h < NBeamsParams.N; h++) {
-        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NBeamsParams.T[1][h]), &(sx->irun));
+    for (h = 0; h < NhotSpotsParams.N; h++) {
+        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NhotSpotsParams.axisY[h]), &(sx->irun));
     }
 
     fscanstr(__FILE__, __LINE__, fp, sx->r, junk, &(sx->irun));
-    fscandbl(__FILE__, __LINE__, fp, sx->r, &(NBeamsParams.T[2][0]), &(sx->irun));
-    for (h = 1; h < NBeamsParams.N; h++) {
-        NBeamsParams.T[2][h] = NBeamsParams.T[2][0];
+    for (h = 0; h < NhotSpotsParams.N; h++) {
+        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NhotSpotsParams.widthRatio[h]), &(sx->irun));
     }
 
     fscanstr(__FILE__, __LINE__, fp, sx->r, junk, &(sx->irun));
-    for (h = 0; h < NBeamsParams.N; h++) {
-        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NBeamsParams.axisX[h]), &(sx->irun));
+    for (h = 0; h < NhotSpotsParams.N; h++) {
+        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NhotSpotsParams.thick[h]), &(sx->irun));
     }
 
     fscanstr(__FILE__, __LINE__, fp, sx->r, junk, &(sx->irun));
-    for (h = 0; h < NBeamsParams.N; h++) {
-        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NBeamsParams.axisY[h]), &(sx->irun));
+    for (h = 0; h < NhotSpotsParams.N; h++) {
+        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NhotSpotsParams.center[h][0]), &(sx->irun));
     }
 
     fscanstr(__FILE__, __LINE__, fp, sx->r, junk, &(sx->irun));
-    for (h = 0; h < NBeamsParams.N; h++) {
-        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NBeamsParams.widthRatio[h]), &(sx->irun));
+    for (h = 0; h < NhotSpotsParams.N; h++) {
+        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NhotSpotsParams.center[h][1]), &(sx->irun));
     }
 
     fscanstr(__FILE__, __LINE__, fp, sx->r, junk, &(sx->irun));
-    for (h = 0; h < NBeamsParams.N; h++) {
-        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NBeamsParams.thick[h]), &(sx->irun));
-    }
-
-    fscanstr(__FILE__, __LINE__, fp, sx->r, junk, &(sx->irun));
-    for (h = 0; h < NBeamsParams.N; h++) {
-        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NBeamsParams.center[h][0]), &(sx->irun));
-    }
-
-    fscanstr(__FILE__, __LINE__, fp, sx->r, junk, &(sx->irun));
-    for (h = 0; h < NBeamsParams.N; h++) {
-        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NBeamsParams.center[h][1]), &(sx->irun));
-    }
-
-    fscanstr(__FILE__, __LINE__, fp, sx->r, junk, &(sx->irun));
-    for (h = 0; h < NBeamsParams.N; h++) {
-        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NBeamsParams.center[h][2]), &(sx->irun));
+    for (h = 0; h < NhotSpotsParams.N; h++) {
+        fscandbl(__FILE__, __LINE__, fp, sx->r, &(NhotSpotsParams.center[h][2]), &(sx->irun));
     }
 
 
@@ -173,27 +146,26 @@ if (sx->r == 0)
    {
    printf("________________ magnetic topology : N beams _________\n");
 
-   for (h = 0; h < NBeamsParams.N; h++) {
+   for (h = 0; h < NhotSpotsParams.N; h++) {
        printf("... Beam #       :%12d\n", h);
-       printf("fi  [0, 360]     :%12.4f\n", NBeamsParams.fi[h]);
-       printf("psi [0,  90]     :%12.4f\n", NBeamsParams.psi[h]);
-       printf("B field          :%12.4f\n", NBeamsParams.b[h]);
+       printf("fi  [0, 360]     :%12.4f\n", NhotSpotsParams.fi[h]);
+       printf("psi [0,  90]     :%12.4f\n", NhotSpotsParams.psi[h]);
+       printf("B field          :%12.4f\n", NhotSpotsParams.b[h]);
        printf("\n");
 
        for (g = 0; g < 3; g++) {
-           printf("beam center  [%1d] :%12.4f\n", g, NBeamsParams.center[h][g]);
+           printf("beam center  [%1d] :%12.4f\n", g, NhotSpotsParams.center[h][g]);
        }
-       printf("axis X           :%12.4f\n", NBeamsParams.axisX[h]);
-       printf("axis Y           :%12.4f\n", NBeamsParams.axisY[h]);
-       printf("width ratio      :%12.4f\n", NBeamsParams.widthRatio[h]);
-       printf("thickness (z)    :%12.4f\n", NBeamsParams.thick[h]);
+       printf("axis X           :%12.4f\n", NhotSpotsParams.axisX[h]);
+       printf("axis Y           :%12.4f\n", NhotSpotsParams.axisY[h]);
+       printf("width ratio      :%12.4f\n", NhotSpotsParams.widthRatio[h]);
+       printf("thickness (z)    :%12.4f\n", NhotSpotsParams.thick[h]);
        printf("\n");
 
        for (g = 0; g < NS+1; g++) {
            printf("___ specie %1d ___\n", g);
-           printf("... density      :%12.4f\n", NBeamsParams.n[g][h]);
-           printf("... fluid vel.   :%12.4f\n", NBeamsParams.V[g][h]);
-           printf("... temperature  :%12.4f\n", NBeamsParams.T[g][h]);
+           printf("... density      :%12.4f\n", NhotSpotsParams.n[g][h]);
+           printf("... temperature  :%12.4f\n", NhotSpotsParams.T[g][h]);
            printf("\n");
        }
    }
@@ -206,7 +178,7 @@ if (sx->r == 0)
 
 
 /* __ polynom used for the interpolation __ */
-double polynomNBeams(double x)
+double polynomNhS(double x)
 {
 double w, y;
 
@@ -225,21 +197,21 @@ return y;
 
 
 /* __ rotate the coordinates with fi & psi angles __ */
-void rotateCoordinatesNB(double pos[3], int h, double* wf, double* wp, double* tx, double* ty, double *tz)
+void rotateCoordinatesNhS(double pos[3], int h, double* wf, double* wp, double* tx, double* ty, double *tz)
 {
 double wx, wy, wz;
 
 
 /* __ set fi & psi angles __ */
-*wf = NBeamsParams.fi[h] *PI/180.0;
-*wp = NBeamsParams.psi[h]*PI/180.0;
+*wf = NhotSpotsParams.fi[h] *PI/180.0;
+*wp = NhotSpotsParams.psi[h]*PI/180.0;
 
 /* __ rotation with fi angle __ */
-wx = (pos[0]-NBeamsParams.center[h][0])*cos(*wf)
-    +(pos[1]-NBeamsParams.center[h][1])*sin(*wf);
-wy =-(pos[0]-NBeamsParams.center[h][0])*sin(*wf)
-    +(pos[1]-NBeamsParams.center[h][1])*cos(*wf);
-wz =  pos[2]-NBeamsParams.center[h][2];
+wx = (pos[0]-NhotSpotsParams.center[h][0])*cos(*wf)
+    +(pos[1]-NhotSpotsParams.center[h][1])*sin(*wf);
+wy =-(pos[0]-NhotSpotsParams.center[h][0])*sin(*wf)
+    +(pos[1]-NhotSpotsParams.center[h][1])*cos(*wf);
+wz =  pos[2]-NhotSpotsParams.center[h][2];
 
 /* __ rotation with psi angle __ */
 *tx =  wx;
@@ -251,12 +223,12 @@ wz =  pos[2]-NBeamsParams.center[h][2];
 
 
 /*---------------------------------------------------------------------------
-    nbeamsDensity()
+    nhotspotsDensity()
   ---------------------------------------------------------------------------
     AIM : returns the density for the given specie (ispe)
     at the given position (pos)
  ---------------------------------------------------------------------------*/
-double nbeamsDensity(struct sti *si, struct stx *sx,
+double nhotspotsDensity(struct sti *si, struct stx *sx,
                      double pos[3], int ispe)
 {
     double wf, wp;
@@ -268,50 +240,31 @@ double nbeamsDensity(struct sti *si, struct stx *sx,
     (void)si;
     (void)sx;
     (void)pos;
+    (void)ispe;
 
 
     /* __ loop on the N shells __ */
-    for (h = 0; h < NBeamsParams.N; h++)
+    for (h = 0; h < NhotSpotsParams.N; h++)
         {
         /* __ [tx, ty, tz] : rotated coordinates __ */
-        rotateCoordinatesNB(pos, h, &wf, &wp, &tx, &ty, &tz);
+        rotateCoordinatesNhS(pos, h, &wf, &wp, &tx, &ty, &tz);
 
         /* __ ellipsis parameters __ */
-        uX = tx/NBeamsParams.axisX[h];
-        uY = ty/NBeamsParams.axisY[h];
+        uX = tx/NhotSpotsParams.axisX[h];
+        uY = ty/NhotSpotsParams.axisY[h];
 
         /* __ set arg of the polynom __ */
         wa[h] = sqrt(pow(uX, 2)+pow(uY, 2));
         }
 
-    if (ispe == 0) {
-        n_ = NBeamsParams.n[2][0];
 
-        for (h = 0; h < NBeamsParams.N; h++) {
-            n_ += NBeamsParams.n[1][h]*polynomNBeams(wa[h]);
-        }
+    n_ = 0.0;
 
-        return n_;
+    for (h = 0; h < NhotSpotsParams.N; h++) {
+        n_ += NhotSpotsParams.n[1][h]*polynomNhS(wa[h]);
     }
 
-    else if (ispe == 1) {
-        n_ = 0.0;
-
-        for (h = 0; h < NBeamsParams.N; h++) {
-            n_ += NBeamsParams.n[1][h]*polynomNBeams(wa[h]);
-        }
-
-        return n_;
-    }
-
-    else if (ispe == 2) {
-        return NBeamsParams.n[2][0];
-    }
-
-    else {
-        printf("what the fuck is this ispe value ?\n");
-        return 0;
-    }
+    return n_;
 
 }
 /*===========================================================================*/
@@ -319,11 +272,11 @@ double nbeamsDensity(struct sti *si, struct stx *sx,
 
 
 /*---------------------------------------------------------------------------
-    nbeamsMagnetic()
+    nhotspotsMagnetic()
   ---------------------------------------------------------------------------
     AIM : returns the magnetic field at the given position (pos)
  ---------------------------------------------------------------------------*/
-void nbeamsMagnetic(struct sti *si, struct stx *sx, double pos[3], double B[3])
+void nhotspotsMagnetic(struct sti *si, struct stx *sx, double pos[3], double B[3])
 {
     double wf, wp;
     double tx, ty, tz;
@@ -340,31 +293,31 @@ void nbeamsMagnetic(struct sti *si, struct stx *sx, double pos[3], double B[3])
 
 
     /* __ loop on the 2 shells __ */
-    for (h = 0; h < NBeamsParams.N; h++)
+    for (h = 0; h < NhotSpotsParams.N; h++)
         {
         /* __ [tx, ty, tz] : rotated coordinates __ */
-        rotateCoordinatesNB(pos, h, &wf, &wp, &tx, &ty, &tz);
+        rotateCoordinatesNhS(pos, h, &wf, &wp, &tx, &ty, &tz);
 
         /* __ ellipsis parameters __ */
-        uX = tx/NBeamsParams.axisX[h];
-        uY = ty/NBeamsParams.axisY[h];
+        uX = tx/NhotSpotsParams.axisX[h];
+        uY = ty/NhotSpotsParams.axisY[h];
 
         /* __ ellipsis arg __ */
         uT = sqrt(uX*uX+uY*uY);
 
         /* __ set arg of the polynom (in X,Y rotated coordinates) __ */
-        wa[h] = (uT-1)/NBeamsParams.widthRatio[h];
+        wa[h] = (uT-1)/NhotSpotsParams.widthRatio[h];
 
         /* __ set arg of the polynom for Z extent __ */
-        wb[h] = tz/NBeamsParams.thick[h];
+        wb[h] = tz/NhotSpotsParams.thick[h];
 
         /* __ vector along magnetic field in rotated coordinates __ */
-        vX = +uY/NBeamsParams.axisY[h];
-        vY = -uX/NBeamsParams.axisX[h];
+        vX = +uY/NhotSpotsParams.axisY[h];
+        vY = -uX/NhotSpotsParams.axisX[h];
         vT = sqrt(vX*vX+vY*vY);
 
         /* __ normalisation : angle between B & azimuthal direction (given by v) __ */
-        Z[h] = (uT < EPS8) ? 0.0 : NBeamsParams.axisY[h]*vT/uT;
+        Z[h] = (uT < EPS8) ? 0.0 : NhotSpotsParams.axisY[h]*vT/uT;
 
         /* __ unit vector along magnetic field lines in lab coordinates __ */
         u[1][h] = (vT < EPS8) ? 0.0 : +(vX/vT)*sin(wf)+(vY/vT)*cos(wf)*cos(wp);
@@ -376,8 +329,8 @@ void nbeamsMagnetic(struct sti *si, struct stx *sx, double pos[3], double B[3])
     for (g = 0; g < 3; g++) {
         B[g] = 0.0;
 
-        for (h = 0; h < NBeamsParams.N; h++) {
-            B[g] += NBeamsParams.b[h]*polynomNBeams(wa[h])*u[g][h]*Z[h]*polynomNBeams(wb[h]);
+        for (h = 0; h < NhotSpotsParams.N; h++) {
+            B[g] += NhotSpotsParams.b[h]*polynomNhS(wa[h])*u[g][h]*Z[h]*polynomNhS(wb[h]);
         }
     }
 
@@ -387,11 +340,11 @@ void nbeamsMagnetic(struct sti *si, struct stx *sx, double pos[3], double B[3])
 
 
 /*---------------------------------------------------------------------------
-    nbeamsElectric()
+    nhotspotsElectric()
   ---------------------------------------------------------------------------
     AIM : returns the electric field at the given position (pos)
  ---------------------------------------------------------------------------*/
-void nbeamsElectric(struct sti *si, struct stx *sx,
+void nhotspotsElectric(struct sti *si, struct stx *sx,
                       double pos[3], double E[3])
 {
     (void)si;
@@ -411,11 +364,11 @@ void nbeamsElectric(struct sti *si, struct stx *sx,
 
 
 /*---------------------------------------------------------------------------
-    nbeamsCurrent()
+    nhotspotsCurrent()
   ---------------------------------------------------------------------------
     AIM : returns the current density at the given position (pos)
  ---------------------------------------------------------------------------*/
-void nbeamsCurrent(struct sti *si, struct stx *sx,
+void nhotspotsCurrent(struct sti *si, struct stx *sx,
                      double pos[3], double J[3])
 {
     (void)si;
@@ -436,11 +389,11 @@ void nbeamsCurrent(struct sti *si, struct stx *sx,
 
 
 /*---------------------------------------------------------------------------
-    nbeamsTemperature()
+    nhotspotsTemperature()
   ---------------------------------------------------------------------------
     AIM : returns the temperature
  ---------------------------------------------------------------------------*/
-void nbeamsTemperature(struct sti *si, struct stx *sx, double pos[3], int ispe, double T[2])
+void nhotspotsTemperature(struct sti *si, struct stx *sx, double pos[3], int ispe, double T[2])
 {
     double wf, wp;
     double tx, ty, tz;
@@ -456,14 +409,14 @@ void nbeamsTemperature(struct sti *si, struct stx *sx, double pos[3], int ispe, 
 
 
     /* __ loop on the 2 shells __ */
-    for (h = 0; h < NBeamsParams.N; h++)
+    for (h = 0; h < NhotSpotsParams.N; h++)
         {
         /* __ [tx, ty, tz] : rotated coordinates __ */
-        rotateCoordinatesNB(pos, h, &wf, &wp, &tx, &ty, &tz);
+        rotateCoordinatesNhS(pos, h, &wf, &wp, &tx, &ty, &tz);
 
         /* __ ellipsis parameters __ */
-        uX = tx/NBeamsParams.axisX[h];
-        uY = ty/NBeamsParams.axisY[h];
+        uX = tx/NhotSpotsParams.axisX[h];
+        uY = ty/NhotSpotsParams.axisY[h];
 
         /* __ set arg of the polynom __ */
         wa[h] = sqrt(pow(uX, 2)+pow(uY, 2));
@@ -471,15 +424,15 @@ void nbeamsTemperature(struct sti *si, struct stx *sx, double pos[3], int ispe, 
 
     /* __ electron temperatures __ */
     if (ispe == 0) {
-        T[PARA] = NBeamsParams.T[0][0];
-        T[PERP] = NBeamsParams.T[0][0];
+        T[PARA] = NhotSpotsParams.T[0][0];
+        T[PERP] = NhotSpotsParams.T[0][0];
     }
 
     /* __  proton temperatures __ */
     else if (ispe == 1) {
         nTot = 0.0;
-        for (h = 0; h < NBeamsParams.N; h++) {
-            n_[h] = NBeamsParams.n[1][h]*polynomNBeams(wa[h]);
+        for (h = 0; h < NhotSpotsParams.N; h++) {
+            n_[h] = NhotSpotsParams.n[1][h]*polynomNhS(wa[h]);
             nTot += n_[h];
         }
 
@@ -487,8 +440,8 @@ void nbeamsTemperature(struct sti *si, struct stx *sx, double pos[3], int ispe, 
 
             P = 0.0;
 
-            for (h = 0; h < NBeamsParams.N; h++) {
-                P += n_[h]*NBeamsParams.T[1][h];
+            for (h = 0; h < NhotSpotsParams.N; h++) {
+                P += n_[h]*NhotSpotsParams.T[1][h];
             }
 
             T[PARA] = P/nTot;
@@ -499,12 +452,6 @@ void nbeamsTemperature(struct sti *si, struct stx *sx, double pos[3], int ispe, 
             T[PARA] = 0.0;
             T[PERP] = 0.0;
         }
-    }
-
-    /* __  alpha temperatures __ */
-    else if (ispe == 2) {
-        T[PARA] = NBeamsParams.T[2][0];
-        T[PERP] = NBeamsParams.T[2][0];
     }
 
     else {
@@ -521,11 +468,11 @@ void nbeamsTemperature(struct sti *si, struct stx *sx, double pos[3], int ispe, 
 
 
 /*---------------------------------------------------------------------------
-    nbeamsCurDrift()
+    nhotspotsCurDrift()
   ---------------------------------------------------------------------------
     AIM : returns the component of the drift vel. associated with the current
  ---------------------------------------------------------------------------*/
-void nbeamsCurDrift(struct sti *si, struct stx *sx, double pos[3],
+void nhotspotsCurDrift(struct sti *si, struct stx *sx, double pos[3],
                     int ispe, double curdrift[3])
 {
     (void)si;
@@ -548,88 +495,29 @@ void nbeamsCurDrift(struct sti *si, struct stx *sx, double pos[3],
 
 
 /*---------------------------------------------------------------------------
-    nbeamsDrift()
+    nhotspotsDrift()
   ---------------------------------------------------------------------------
     AIM : returns a drift velocity at a given position (pos)
  ---------------------------------------------------------------------------*/
-void nbeamsDrift(struct sti *si, struct stx *sx,
+void nhotspotsDrift(struct sti *si, struct stx *sx,
                  double pos[3], int ispe, double vdrift[3])
 {
-    double wf, wp;
-    double tx, ty, tz;
-    double uX, uY, uT;
-    double vX, vY, vT;
-    double wa[MAXNBEAMS];
-    double u[3][MAXNBEAMS];
-    int g, h;
     (void)si;
     (void)sx;
     (void)pos;
+    (void)ispe;
 
 
-    /* __ loop on the 2 shells __ */
-    for (h = 0; h < NBeamsParams.N; h++)
-        {
-        /* __ [tx, ty, tz] : rotated coordinates __ */
-        rotateCoordinatesNB(pos, h, &wf, &wp, &tx, &ty, &tz);
-
-        /* __ ellipsis parameters __ */
-        uX = tx/NBeamsParams.axisX[h];
-        uY = ty/NBeamsParams.axisY[h];
-
-        /* __ ellipsis arg __ */
-        uT = sqrt(uX*uX+uY*uY);
-
-        /* __ set arg of the polynom __ */
-        wa[h] = 2*uT-1;
-
-        /* __ vector along magnetic field in rotated coordinates __ */
-        vX = +uX/NBeamsParams.axisX[h];
-        vY = +uY/NBeamsParams.axisY[h];
-        vT = sqrt(vX*vX+vY*vY);
-
-        /* __ unit vector along magnetic field lines in lab coordinates __ */
-        u[0][h] = (vT < EPS8) ? 0.0 : +(vX/vT)*cos(wf)-(vY/vT)*sin(wf)*cos(wp);
-        u[1][h] = (vT < EPS8) ? 0.0 : +(vX/vT)*sin(wf)+(vY/vT)*cos(wf)*cos(wp);
-        u[2][h] = (vT < EPS8) ? 0.0 :                 +(vY/vT)        *sin(wp);
-        }
-
-    /* __ electron velocity __ */
-    if (ispe == 0) {
-        vdrift[0] = 0.0;
-        vdrift[1] = 0.0;
-        vdrift[2] = 0.0;
-    }
-
-    /* __ proton velocity __ */
-    else if (ispe == 1) {
-        for (g = 0; g < 3; g++) {
-            vdrift[g] = 0.0;
-
-            for (h = 0; h < NBeamsParams.N; h++) {
-                vdrift[g] += NBeamsParams.V[1][h]*polynomNBeams(wa[h])*u[g][h];
-            }
-
-        }
-    }
-
-    /* __ alpha velocity __ */
-    else if (ispe == 2) {
-        vdrift[0] = 0.0;
-        vdrift[1] = 0.0;
-        vdrift[2] = 0.0;
-    }
-
-    else {
-        printf("what the fuck is this ispe value ?\n");
-    }
+    vdrift[0] = 0.0;
+    vdrift[1] = 0.0;
+    vdrift[2] = 0.0;
 
 }
 /*===========================================================================*/
 
 
 
-void nbeamsDrive(struct sti si, struct stx sx, Grid0 *s0, ST1 *s1, ST2 *s2, Particle *sp[NS+1], int ipc, int it)
+void nhotspotsDrive(struct sti si, struct stx sx, Grid0 *s0, ST1 *s1, ST2 *s2, Particle *sp[NS+1], int ipc, int it)
 {
 
 }

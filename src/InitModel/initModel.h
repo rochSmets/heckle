@@ -3,9 +3,9 @@
 #ifndef INIT_MODEL_H
 #define INIT_MODEL_H
 
+#include <Particle/particle.h>
 #include <defines.h>
 #include <structures.h>
-#include <Particle/particle.h>
 
 typedef enum {
   INITMODEL_DOUBLEHARRIS,
@@ -14,7 +14,8 @@ typedef enum {
   INITMODEL_ASYMANGLE,
   INITMODEL_NBEAMS,
   INITMODEL_SHEARB,
-  INITMODEL_NLASERS
+  INITMODEL_NLASERS,
+  INITMODEL_NHOTSPOTS
 } kind_initModel;
 
 void initModelStart(struct sti *si, struct stx *sx, char *dir);
@@ -40,7 +41,8 @@ void initModelCurDrift(struct sti *si, struct stx *sx, double pos[3], int ispe,
 void initModelDrift(struct sti *si, struct stx *sx, double pos[3], int ispe,
                     double vdrift[3]);
 
-void initModelDrive(struct sti si, struct stx sx, Grid0 *s0, ST1 *s1, ST2 *s2, Particle *sp[NS+1], int ipc, int it);
+void initModelDrive(struct sti si, struct stx sx, Grid0 *s0, ST1 *s1, ST2 *s2,
+                    Particle *sp[NS + 1], int ipc, int it);
 
 void normal(struct sti *si, struct stx *sx);
 

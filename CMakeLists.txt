@@ -38,6 +38,7 @@ set(SOURCES_INC
     src/InitModel/initModelNBeams.h
     src/InitModel/initModelShearB.h
     src/InitModel/initModelNLasers.h
+    src/InitModel/initModelNhotSpots.h
     src/HeckleMPI/ghostg2p.h
     src/HeckleMPI/particlecomm.h
     src/HeckleMPI/ghostg2mom.h
@@ -85,6 +86,7 @@ set(SOURCES_C
     src/InitModel/initModelNBeams.c
     src/InitModel/initModelShearB.c
     src/InitModel/initModelNLasers.c
+    src/InitModel/initModelNhotSpots.c
     src/smooth.c
     src/start.c
     src/push.c
@@ -169,4 +171,4 @@ target_include_directories(${PROJECT_NAME} PRIVATE
   )
 
 #add_definitions( -D NS=2 -D FULLP)
-add_definitions( -D NS=2 )
+add_definitions( -D NS=1 )
